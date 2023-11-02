@@ -1,0 +1,65 @@
+name: binav_avts
+description: A new Flutter project.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+    
+  cupertino_icons: ^1.0.2
+  
+  # Plugin Router 
+  go_router: ^12.0.1
+
+  # Plugin State Management
+  bloc: ^8.1.2
+  flutter_bloc: ^8.1.3
+
+  # Plugin menyimpan data Cookies
+  shared_preferences: ^2.2.2
+  dio: ^5.3.3
+
+  # Loader UI
+  flutter_easyloading: ^3.0.5
+  loader_overlay: ^2.3.2
+
+  # Fonts
+  google_fonts: ^6.1.0
+
+  # Carousel UI
+  carousel_slider: ^4.2.1
+  dots_indicator: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/kapal.png
+    - assets/model_kapal.jpg
+    - assets/kml/cta.kml
+    - assets/kml/format_pipa.kml
+    - assets/kml/
+    - assets/xml/kapal.xml
+    - assets/xml/
+    - assets/
+    - assets/background-login.jpg
+    - assets/maps-icon.png
+    - assets/xml_icon.png
+    - assets/add_file_icon.png
+    - assets/xml_icon2.png
+    - assets/lottie/animation_delete.json
+    - assets/logo.png
+    - assets/intro1.jpg
+    - assets/intro2.jpg
+    - assets/intro3.jpg
+    - assets/intro4.jpg

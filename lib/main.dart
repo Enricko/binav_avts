@@ -1,0 +1,94 @@
+import 'package:binav_avts/bloc/user/user_bloc.dart';
+import 'package:binav_avts/datasource/user_datasource.dart';
+import 'package:binav_avts/page/login.dart';
+import 'package:binav_avts/page/main_page.dart';
+import 'package:binav_avts/page/screen/splash.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
+
+void configLoading() {
+  EasyLoading.instance
+    ..displayDuration = const Duration(milliseconds: 2000)
+    ..indicatorType = EasyLoadingIndicatorType.ring
+    ..loadingStyle = EasyLoadingStyle.dark
+    ..indicatorSize = 45.0
+    ..radius = 10.0
+    ..userInteractions = true
+    ..animationStyle = EasyLoadingAnimationStyle.scale
+    ..maskType = EasyLoadingMaskType.black;
+  // ..customAnimation = CustomAnimation();
+}
+
+void main() {
+  usePathUrlStrategy();
+  runApp(MyApp());
+  configLoading();
+}
+
+class MyApp extends StatelessWidget {
+  MyApp({super.key});
+
+  final GoRouter router = GoRouter(routes: [
+    GoRoute(
+      path: '/',
+      name: 'splash_screen',
+      builder: (context, state) {
+        return Splash();
+      },
+      routes: [
+        GoRoute(
+          path: 'login',
+          name: 'login',
+          builder: (context, state) {
+            return Login();
+          },
+        ),
+        GoRoute(
+          path: 'main_page',
+          name: 'main_page',
+          builder: (context, state) {
+            return MainPage();
+          },
+        ),
+        // GoRoute(
+        //   path: 'login-client/:client',
+        //   builder: (BuildContext context, GoRouterState state) {
+            
+        //     return Login(idClient: state.pathParameters['client'].toString());
+        //     // ClientMaps(idClient:state.pathParameters['client'].toString());
+        //   },
+        // ),
+      ],
+    ),
+  ], initialLocation: '/', debugLogDiagnostics: true, routerNeglect: true);
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) =>
+          UserBloc(userDataSource: UserDataSource())..add(CheckSignInStatus()),
+      child: BlocListener<UserBloc, UserState>(
+        listener: (context, state) {
+          if (state is UserSignedIn) {
+            router.goNamed("main_page");
+          } else if (state is UserSignedOut) {
+            router.goNamed('login');
+          }
+        },
+        child: MaterialApp.router(
+          title: 'Binav AVTS',
+          routeInformationParser: router.routeInformationParser,
+          routerDelegate: router.routerDelegate,
+          routeInformationProvider: router.routeInformationProvider,
+          debugShowCheckedModeBanner: false,
+          builder: EasyLoading.init(),
+          // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        ),
+      ),
+    );
+  }
+}

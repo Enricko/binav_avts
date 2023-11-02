@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<CTIVesselFile>
+ <DocumentProperties>
+     <File Contents="Vessel Definition" Type="user" Version="2.03"  />
+     <Origin CreatedBy="Bahrunsjah" CreateTime="Tue Sep 12 17:14:39 2023" LastModTime="Tue Sep 12 17:14:39 2023" parent=""  />
+     <Application name="" version=""  />
+     <System name="LAPTOP-DYNABOOK" OSVersion="Windows 10.0 Build 19045  SP0.0"  />
+     <Project name=""  />
+ </DocumentProperties>
+ <VesselIdentification>
+     <Name Value="JSF Import" />
+     <Description Value="Vessel imported from 20140224170936__Binned.jsf." />
+ </VesselIdentification>
+ <VesselShape>
+     <LengthM Value="10.000000" />
+     <WidthM Value="3.000000" />
+     <LengthBowToBreakM Value="7.000000" />
+     <HeightM Value="2.000000" />
+     <HeightWaterlineM Value="0.000000" />
+     <SquatM Value="0.000000" />
+     <VesselType Value="0" />
+ </VesselShape>
+ <VesselAppearance>
+     <BowLine IsOn="1" LengthM="5000" Color="16711680"  />
+     <Drawing KeepCentered="1" Mode="0" FixedSizeIdx="1" HeadingAngleSrc="0" DrawVesselFilled="0"  />
+ </VesselAppearance>
+ <ReferencePos>
+     <CoordinatesM X="1.500000" Y="5.000000" Z="1.000000"  />
+ </ReferencePos>
+ <Sensors>
+     <Sensor>
+         <Identification Name="Edgetech 6205 230 kHz" Description="Edgetech 6205 230 kHz bathymetry and dual frequency sidescan"  />
+         <Characteristics Class="Swath Bathy" ClassID="300" MfgModel="Edgetech 6205 230 kHz" MfgModelID="303" NumChannels="2" IsTowedBy="" Priority="1"  />
+         <Connection PortType="0" SerialPort="0" TcpUdpPort="0" IPAddress="127.0.0.1" Baud="4800" Parity="0" DataBits="8" StopBits="1"  />
+         <Offset Channel="0" X="0.000000" Y="0.000000" Z="0.000000" Roll="0.000000" Pitch="0.000000" Heading="180.000000" Latency="0.000000" Color="255"  />
+         <Offset Channel="1" X="0.000000" Y="0.000000" Z="0.000000" Roll="0.000000" Pitch="0.000000" Heading="0.000000" Latency="0.000000" Color="32768"  />
+     </Sensor>
+     <Sensor>
+         <Identification Name="Edgetech 6205" Description="Edgetech 6205 bathymetry and dual frequency sidescan"  />
+         <Characteristics Class="Sidescan" ClassID="100" MfgModel="Edgetech 6205" MfgModelID="110" NumChannels="4" IsTowedBy="" Priority="1"  />
+         <Connection PortType="1" SerialPort="1" TcpUdpPort="0" IPAddress="" Baud="9600" Parity="0" DataBits="8" StopBits="1"  />
+         <Offset Channel="0" X="0.000000" Y="0.000000" Z="0.000000" Roll="0.000000" Pitch="0.000000" Heading="0.000000" Latency="0.000000" Color="16711680"  />
+         <Offset Channel="1" X="0.000000" Y="0.000000" Z="0.000000" Roll="0.000000" Pitch="0.000000" Heading="0.000000" Latency="0.000000" Color="16711680"  />
+         <Offset Channel="2" X="0.000000" Y="0.000000" Z="0.000000" Roll="0.000000" Pitch="0.000000" Heading="0.000000" Latency="0.000000" Color="16711680"  />
+         <Offset Channel="3" X="0.000000" Y="0.000000" Z="0.000000" Roll="0.000000" Pitch="0.000000" Heading="0.000000" Latency="0.000000" Color="16711680"  />
+     </Sensor>
+     <Sensor>
+         <Identification Name="Edgetech 6205 SS Nav" Description="Edgetech 6205 Sidescan sonar nav device"  />
+         <Characteristics Class="Sidescan Sonar Position" ClassID="1100" MfgModel="Edgetech 6205 SS Nav" MfgModelID="1110" NumChannels="1" IsTowedBy="" Priority="1"  />
+         <Connection PortType="1" SerialPort="1" TcpUdpPort="0" IPAddress="" Baud="9600" Parity="0" DataBits="8" StopBits="1"  />
+         <Offset Channel="0" X="0.000000" Y="0.000000" Z="0.000000" Roll="0.000000" Pitch="0.000000" Heading="0.000000" Latency="0.000000" Color="16711680"  />
+     </Sensor>
+     <Sensor>
+         <Identification Name="Generic Motion Sensor" Description="Generic or unknown motion sensor"  />
+         <Characteristics Class="Motion Sensor" ClassID="700" MfgModel="Generic Motion Sensor" MfgModelID="795" NumChannels="1" IsTowedBy="" Priority="1"  />
+         <Connection PortType="0" SerialPort="0" TcpUdpPort="0" IPAddress="127.0.0.1" Baud="4800" Parity="0" DataBits="8" StopBits="1"  />
+         <Offset Channel="0" X="0.000000" Y="0.000000" Z="0.000000" Roll="0.000000" Pitch="0.000000" Heading="0.000000" Latency="0.000000" Color="16711935"  />
+     </Sensor>
+     <Sensor>
+         <Identification Name="Generic Position Sensor" Description="Generic or unknown model of position sensor"  />
+         <Characteristics Class="Position" ClassID="400" MfgModel="Generic Position Sensor" MfgModelID="495" NumChannels="1" IsTowedBy="" Priority="1"  />
+         <Connection PortType="0" SerialPort="0" TcpUdpPort="0" IPAddress="127.0.0.1" Baud="4800" Parity="0" DataBits="8" StopBits="1"  />
+         <Offset Channel="0" X="0.000000" Y="0.000000" Z="0.000000" Roll="0.000000" Pitch="0.000000" Heading="0.000000" Latency="0.000000" Color="16711680"  />
+     </Sensor>
+ </Sensors>
+</CTIVesselFile>
