@@ -1,4 +1,4 @@
-import 'package:binav_avts/datasource/user_datasource.dart';
+import 'package:binav_avts/services/user_dataservice.dart';
 import 'package:binav_avts/response/user_response.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
@@ -9,7 +9,7 @@ part 'user_event.dart';
 part 'user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
-  final UserDataSource userDataSource;
+  final UserDataService userDataSource;
   UserBloc({required this.userDataSource}) : super(UserSignedOut()) {
     on<SignIn>((event, emit) async {
       if(state is UserSignedOut){
@@ -26,6 +26,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
           emit(UserSignedIn(user:getUser));
         }else{
+          emit(UserSignedOut());
           emit(UserSignedOut(message:getUser.message!,type: TypeMessageAuth.Error));
         }
       }
@@ -52,6 +53,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       SharedPreferences pref = await SharedPreferences.getInstance();
       String? email = pref.getString("email");
       String? token = pref.getString("token");
+      print(token);
 
       if(email != null && token != null){
         final getUser = await userDataSource.getUser(token:token);

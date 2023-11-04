@@ -8,7 +8,7 @@ enum TypeMessageAuth {
   Logout,
 }
 
-class UserDataSource {
+class UserDataService {
   // final dio = Dio(BaseOptions(baseUrl: "http://127.0.0.1:8000"));
   final dio = Dio(BaseOptions(baseUrl: "https://api.binav-avts.id"));
 
@@ -17,10 +17,8 @@ class UserDataSource {
     try {
       final response = await dio
           .post("/api/login", data: {'email': email, 'password': password});
-      print(response.data);
       return UserResponse.fromJson(response.data);
     } catch (e) {
-      print(e);
       if (e is DioError) {
         if (e.response != null) {
           return UserResponse.fromJson(e.response!.data);

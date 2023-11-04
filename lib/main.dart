@@ -1,5 +1,6 @@
 import 'package:binav_avts/bloc/user/user_bloc.dart';
-import 'package:binav_avts/datasource/user_datasource.dart';
+import 'package:binav_avts/bloc/websocket/socket_cubit.dart';
+import 'package:binav_avts/services/user_dataservice.dart';
 import 'package:binav_avts/page/login.dart';
 import 'package:binav_avts/page/main_page.dart';
 import 'package:binav_avts/page/screen/splash.dart';
@@ -28,9 +29,14 @@ void main() {
   configLoading();
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   final GoRouter router = GoRouter(routes: [
     GoRoute(
       path: '/',
@@ -56,7 +62,7 @@ class MyApp extends StatelessWidget {
         // GoRoute(
         //   path: 'login-client/:client',
         //   builder: (BuildContext context, GoRouterState state) {
-            
+
         //     return Login(idClient: state.pathParameters['client'].toString());
         //     // ClientMaps(idClient:state.pathParameters['client'].toString());
         //   },
@@ -65,15 +71,28 @@ class MyApp extends StatelessWidget {
     ),
   ], initialLocation: '/', debugLogDiagnostics: true, routerNeglect: true);
 
+  @override
+  void initState() {
+    super.initState();
+    // WebSocketDataService().run();
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          UserBloc(userDataSource: UserDataSource())..add(CheckSignInStatus()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => UserBloc(userDataSource: UserDataService())
+            ..add(CheckSignInStatus()),
+        ),
+        BlocProvider(create: (BuildContext context) => SocketCubit()..listen()),
+      ],
       child: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserSignedIn) {
+            EasyLoading.showSuccess("Welcome Back",
+                duration: Duration(milliseconds: 2000), dismissOnTap: true);
             router.goNamed("main_page");
           } else if (state is UserSignedOut) {
             router.goNamed('login');

@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:binav_avts/bloc/user/user_bloc.dart';
-import 'package:binav_avts/datasource/user_datasource.dart';
+import 'package:binav_avts/services/user_dataservice.dart';
 import 'package:binav_avts/page/screen/intro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,11 +20,14 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final _formKey = GlobalKey<FormState>();
+
   // Login Form Controller Variable
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool invisible = true;
   bool _isVisible = true;
+  bool showError = false;
 
   // Carousel Variable
   final PageController _pageController = PageController();
@@ -43,9 +48,11 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    context.read<UserBloc>().stream.listen((state) { 
-      if(state is UserSignedOut && state.type == TypeMessageAuth.Logout) EasyLoading.showSuccess("${state.message}",duration: Duration(milliseconds: 3000),dismissOnTap: true);
-    });
+    var state = context.read<UserBloc>().state;
+    if (state is UserSignedOut && state.type == TypeMessageAuth.Logout) {
+      EasyLoading.showSuccess("${state.message}",
+          duration: Duration(milliseconds: 3000), dismissOnTap: true);
+    }
   }
 
   @override
@@ -66,6 +73,13 @@ class _LoginState extends State<Login> {
       ),
       body: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
+          if (state is UserSignedOut &&
+              state.type == TypeMessageAuth.Error) {
+            EasyLoading.showError("${state.message}",
+                duration: Duration(milliseconds: 3000), dismissOnTap: true);
+            showError = false;
+          }
+
           return Container(
             child: Row(
               children: [
@@ -105,124 +119,196 @@ class _LoginState extends State<Login> {
                           ],
                         ),
                       ),
-                Container(
-                  width: width <= 540 ? width : width / 2,
-                  padding: const EdgeInsets.all(30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image.asset(
-                        "assets/logo.png",
-                        height: 40,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "${widget.idClient}"
-                        "Hai Welcome to Binav AVTS\n"
-                        "Log in to your Account",
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w600),
-                      ),
-                      Expanded(child: Container()),
-                      Column(
-                        children: [
-                          // widget.idClient != null ? Text("Email : ${emailController.text}") :
-                          Visibility(
-                            visible: _isVisible,
-                            child: Container(
-                              child: TextFormField(
-                                keyboardType: TextInputType.text,
-                                controller: emailController,
-                                textInputAction: TextInputAction.next,
-                                decoration: const InputDecoration(
-                                  contentPadding:
-                                      EdgeInsets.fromLTRB(20, 3, 1, 3),
-                                  hintText: "Email",
-                                  prefixIcon: Icon(Icons.email_outlined),
-                                  // hintStyle: Constants.hintStyle,
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 1, color: Colors.blueAccent),
+                SingleChildScrollView(
+                  child: Container(
+                    width: width <= 540 ? width : width / 2,
+                    padding: const EdgeInsets.all(30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          "assets/logo.png",
+                          height: 40,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "${widget.idClient}"
+                          "Hai Welcome to Binav AVTS\n"
+                          "Log in to your Account",
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w600),
+                        ),
+                        Container(
+                          constraints: BoxConstraints(minHeight: 100),
+                        ),
+                        Column(
+                          children: [
+                            // widget.idClient != null ? Text("Email : ${emailController.text}") :
+                            Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  Visibility(
+                                    visible: _isVisible,
+                                    child: Container(
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.text,
+                                        controller: emailController,
+                                        textInputAction: TextInputAction.next,
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.isEmpty ||
+                                              value == "") {
+                                            return "The Email field is required.";
+                                          }
+                                          if (!RegExp(
+                                                  r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+                                              .hasMatch(value)) {
+                                            return 'Please enter a valid email';
+                                          }
+                                          return null;
+                                        },
+                                        decoration: const InputDecoration(
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(20, 3, 1, 3),
+                                          hintText: "Email",
+                                          prefixIcon:
+                                              Icon(Icons.email_outlined),
+                                          // hintStyle: Constants.hintStyle,
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.blueAccent),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.black38)),
+                                          errorBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.redAccent)),
+                                          focusedErrorBorder:
+                                              OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Colors.redAccent)),
+                                          filled: true,
+                                          fillColor: Color(0xF2F2F2F),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          width: 1, color: Colors.black38)),
-                                  filled: true,
-                                  fillColor: Color(0xF2F2F2F),
-                                ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Container(
+                                    child: TextFormField(
+                                      keyboardType: TextInputType.text,
+                                      controller: passwordController,
+                                      textInputAction: TextInputAction.next,
+                                      obscureText: invisible,
+                                      validator: (value) {
+                                        if (value == null ||
+                                            value.isEmpty ||
+                                            value == "") {
+                                          return "The Password field is required.";
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        contentPadding: const EdgeInsets.all(5),
+                                        hintText: "Password",
+                                        prefixIcon: const Icon(Icons.key),
+                                        suffixIcon: IconButton(
+                                          icon: Icon((invisible == true)
+                                              ? Icons.visibility_outlined
+                                              : Icons.visibility_off),
+                                          onPressed: () {
+                                            setState(() {
+                                              invisible = !invisible;
+                                            });
+                                          },
+                                        ),
+                                        // hintStyle: Constants.hintStyle,
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.blueAccent),
+                                        ),
+                                        enabledBorder: const OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.black38)),
+                                        errorBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.redAccent)),
+                                        focusedErrorBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Colors.redAccent)),
+                                        filled: true,
+                                        fillColor: const Color(0xF2F2F2F),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            child: TextFormField(
-                              keyboardType: TextInputType.text,
-                              controller: passwordController,
-                              textInputAction: TextInputAction.next,
-                              obscureText: invisible,
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.all(5),
-                                hintText: "Password",
-                                prefixIcon: const Icon(Icons.key),
-                                suffixIcon: IconButton(
-                                  icon: Icon((invisible == true)
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off),
-                                  onPressed: () {
-                                    setState(() {
-                                      invisible = !invisible;
-                                    });
-                                  },
-                                ),
-                                // hintStyle: Constants.hintStyle,
-                                focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 1, color: Colors.blueAccent),
-                                ),
-                                enabledBorder: const OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 1, color: Colors.black38)),
-                                filled: true,
-                                fillColor: const Color(0xF2F2F2F),
-                              ),
+                            const SizedBox(
+                              height: 40,
                             ),
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 25),
-                            width: double.infinity,
-                            height: 40,
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    const Color(0xFF133BAD)),
-                                shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
+                            Text(
+                              state is UserSignedOut &&
+                                      state.type == TypeMessageAuth.Error
+                                  ? state.message
+                                  : "",
+                              style: TextStyle(color: Colors.redAccent),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 25),
+                              width: double.infinity,
+                              height: 40,
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      const Color(0xFF133BAD)),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  // _isVisible == true ? loginAdmin() : loginClient();
+                                  if (_formKey.currentState!.validate()) {
+                                    // If the form is valid, display a snackbar. In the real world,
+                                    // you'd often call a server or save the information in a database.
+                                    await EasyLoading.show(
+                                        status: "Loading...");
+                                    context.read<UserBloc>().add(SignIn(
+                                        email: emailController.text,
+                                        password: passwordController.text));
+                                  }
+                                },
+                                child: const Text(
+                                  "Log in",
+                                  style: TextStyle(
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
-                              onPressed: () {
-                                // _isVisible == true ? loginAdmin() : loginClient();
-                                context.read<UserBloc>().add(SignIn(email: emailController.text, password: passwordController.text));
-                              },
-                              child: const Text(
-                                "Log in",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

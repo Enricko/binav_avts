@@ -23,9 +23,16 @@ dependencies:
   shared_preferences: ^2.2.2
   dio: ^5.3.3
 
+  # Plugin Socket Channel
+  web_socket_channel: ^2.4.0
+
   # Loader UI
   flutter_easyloading: ^3.0.5
   loader_overlay: ^2.3.2
+
+  # Alert UI 
+  flutter_styled_toast: ^2.2.1
+  lottie: ^2.7.0
 
   # Fonts
   google_fonts: ^6.1.0
@@ -33,6 +40,9 @@ dependencies:
   # Carousel UI
   carousel_slider: ^4.2.1
   dots_indicator: ^3.0.0
+
+  # Pagination Button UI
+  pagination_flutter: ^0.0.8
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +57,7 @@ flutter:
     - assets/kapal.png
     - assets/model_kapal.jpg
     - assets/kml/cta.kml
+    - assets/lottie/
     - assets/kml/format_pipa.kml
     - assets/kml/
     - assets/xml/kapal.xml
@@ -57,6 +68,7 @@ flutter:
     - assets/xml_icon.png
     - assets/add_file_icon.png
     - assets/xml_icon2.png
+    - assets/lottie/mail.json
     - assets/lottie/animation_delete.json
     - assets/logo.png
     - assets/intro1.jpg
