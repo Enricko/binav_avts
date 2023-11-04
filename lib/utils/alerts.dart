@@ -105,12 +105,12 @@ class Alerts {
           SizedBox(
             height: 80,
             width: 80,
-            // child: Lottie.asset('assets/lottie/mail.json',
-            //   fit: BoxFit.contain,
-            // ),
-            child: Lottie.asset('assets/lottie/animation_delete.json',
+            child: Lottie.asset('assets/lottie/mail.json',
               fit: BoxFit.contain,
             ),
+            // child: Lottie.asset('assets/lottie/animation_delete.json',
+            //   fit: BoxFit.contain,
+            // ),
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
           // judul
