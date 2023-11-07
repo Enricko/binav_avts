@@ -128,7 +128,7 @@ class _KapalTablePageState extends State<KapalTablePage> {
           ),
           StreamBuilder<KapalResponse>(
             stream: BlocProvider.of<SocketCubit>(context).KapalTableStreamController,
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot<KapalResponse> snapshot) {
               if (snapshot.hasError) {
                 return const Center(
                   child: Text("Something went wrong"),

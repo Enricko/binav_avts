@@ -128,7 +128,7 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
           ),
           StreamBuilder<MappingResponse>(
             stream: BlocProvider.of<SocketCubit>(context).MappingTableStreamController,
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot<MappingResponse> snapshot) {
               if (snapshot.hasError) {
                 return const Center(
                   child: Text("Something went wrong"),

@@ -47,6 +47,9 @@ dependencies:
   dropdown_textfield: ^1.0.8
   responsive_ui: ^3.0.1
   dropdown_search: ^5.0.6
+  flutter_map: ^6.0.1
+  xml: ^6.3.0
+  flutter_map_cancellable_tile_provider: ^1.0.0
 
 dev_dependencies:
   flutter_test:

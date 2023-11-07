@@ -69,6 +69,8 @@ class Data {
     }
   }
 
+  get data => null;
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> _data = <String, dynamic>{};
     if(kapal != null) {

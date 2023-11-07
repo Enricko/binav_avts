@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:binav_avts/response/websocket/client_response.dart';
 import 'package:binav_avts/response/websocket/ipkapal_response.dart';
 import 'package:binav_avts/response/websocket/kapal_response.dart';
+import 'package:binav_avts/response/websocket/kapalcoor_response.dart';
 import 'package:binav_avts/response/websocket/mapping_response.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
@@ -42,6 +43,13 @@ class SocketCubit extends Cubit<SocketState> {
   Stream<MappingResponse> get MappingTableStreamController =>
       _mappingTableStreamController.stream;
 
+  // === Mapping Layer ===
+  final _mappingLayerStreamController = StreamController<MappingResponse>.broadcast();
+
+  // ignore: non_constant_identifier_names
+  Stream<MappingResponse> get MappingLayerStreamController =>
+      _mappingLayerStreamController.stream;
+
   // === Kapal Table ===
   final _kapalTableStreamController = StreamController<KapalResponse>.broadcast();
 
@@ -55,6 +63,12 @@ class SocketCubit extends Cubit<SocketState> {
   // ignore: non_constant_identifier_names
   Stream<IpkapalResponse> get IpKapalTableStreamController =>
       _ipKapalTableStreamController.stream;
+  
+  final _kapalCoorMarkerStreamController = StreamController<KapalcoorResponse>.broadcast();
+
+  // ignore: non_constant_identifier_names
+  Stream<KapalcoorResponse> get KapalCoorMarkerStreamController =>
+      _kapalCoorMarkerStreamController.stream;
 
 
   void getClientDataTable({required Map<String, dynamic> payload}) {
@@ -79,17 +93,27 @@ class SocketCubit extends Cubit<SocketState> {
     _channel.sink.add(json.encode(payload));
   }
   
-  void getKapalCoorData({required Map<String, dynamic> payload}) {
+
+  void getIPKapalDataTable({required Map<String, dynamic> payload}) {
+    payload.addAll({
+      "type": "ipkapal",
+      "id_response": 1,
+    });
+    _channel.sink.add(json.encode(payload));
+  }
+
+  void getKapalCoorDataMarker({required Map<String, dynamic> payload}) {
     payload.addAll({
       "type": "kapalcoor",
       "id_response": 1,
     });
     _channel.sink.add(json.encode(payload));
   }
-  void getIPKapalData({required Map<String, dynamic> payload}) {
+
+  void getMappingLayer({required Map<String, dynamic> payload}) {
     payload.addAll({
-      "type": "ipkapal",
-      "id_response": 1,
+      "type": "mapping",
+      "id_response": 2,
     });
     _channel.sink.add(json.encode(payload));
   }
@@ -111,6 +135,9 @@ class SocketCubit extends Cubit<SocketState> {
           if(message['id_response'] == '1') {
             _mappingTableStreamController.sink.add(MappingResponse.fromJson(message));
           }
+          if(message['id_response'] == '2') {
+            _mappingLayerStreamController.sink.add(MappingResponse.fromJson(message));
+          }
         }
 
         // === Kapal Listener ===
@@ -124,6 +151,13 @@ class SocketCubit extends Cubit<SocketState> {
         if(TypeSocket.ipkapal.name.toLowerCase() == message['type'].toString().toLowerCase()) {
           if(message['id_response'] == '1') {
             _ipKapalTableStreamController.sink.add(IpkapalResponse.fromJson(message));
+          }
+        }
+        
+        // === IP Kapal Listener ===
+        if(TypeSocket.kapalcoor.name.toLowerCase() == message['type'].toString().toLowerCase()) {
+          if(message['id_response'] == '1') {
+            _kapalCoorMarkerStreamController.sink.add(KapalcoorResponse.fromJson(message));
           }
         }
       }

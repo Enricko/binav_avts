@@ -139,7 +139,7 @@ class _ClientTablePageState extends State<ClientTablePage> {
           StreamBuilder<ClientResponse>(
             stream: BlocProvider.of<SocketCubit>(context)
                 .ClientTableStreamController,
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot<ClientResponse> snapshot) {
               if (snapshot.hasError) {
                 return const Center(
                   child: Text("Something went wrong"),

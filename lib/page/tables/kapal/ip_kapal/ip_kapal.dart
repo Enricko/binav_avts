@@ -36,7 +36,7 @@ class _IpKapalPageState extends State<IpKapalPage> {
   void initState() {
     _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
       BlocProvider.of<SocketCubit>(context)
-          .getIPKapalData(payload: {"call_sign": widget.callSign, "page": 1, "perpage": 10});
+          .getIPKapalDataTable(payload: {"call_sign": widget.callSign, "page": 1, "perpage": 10});
       setState(() {
         load = false;
       });
@@ -283,7 +283,7 @@ class _IpKapalPageState extends State<IpKapalPage> {
                     ),
                     StreamBuilder<IpkapalResponse>(
                       stream: BlocProvider.of<SocketCubit>(context).IpKapalTableStreamController,
-                      builder: (context, snapshot) {
+                      builder: (context, AsyncSnapshot<IpkapalResponse> snapshot) {
                         if (snapshot.hasError) {
                           return const Center(
                             child: Text("Something went wrong"),
