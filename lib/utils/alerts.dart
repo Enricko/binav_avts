@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:lottie/lottie.dart';
@@ -17,6 +16,7 @@ class Alerts {
       curve: Curves.elasticOut,
     );
   }
+
   static showAlert(String message, BuildContext context) {
     // print("item deleted!");
     showToast(
@@ -38,33 +38,35 @@ class Alerts {
       required BuildContext context}) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          icon:
-          SizedBox(
+          icon: SizedBox(
             height: 80,
             width: 80,
-            child: Lottie.asset('assets/lottie/animation_delete.json',
+            child: Lottie.asset(
+              'assets/lottie/animation_delete.json',
               fit: BoxFit.contain,
             ),
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
           // judul
-          title: Text(title,style: TextStyle(fontSize: 20),),
+          title: Text(
+            title,
+            style: TextStyle(fontSize: 20),
+          ),
           actions: [
             // tombel yes
-            SizedBox(width: 90,
+            SizedBox(
+              width: 90,
               child: ElevatedButton(
                 style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.circular(4))),
-                  backgroundColor:
-                  MaterialStateProperty.all(
-                      Colors.red),),
+                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4))),
+                  backgroundColor: MaterialStateProperty.all(Colors.red),
+                ),
                 onPressed: onPressYes,
-                child: Text('Delete',style: TextStyle(color: Colors.white)),
+                child: Text('Delete', style: TextStyle(color: Colors.white)),
               ),
             ),
             //tombol no
@@ -73,25 +75,23 @@ class Alerts {
               child: TextButton(
                 style: ButtonStyle(
                     shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        side: BorderSide(
-                          color: Colors.black38,
-                        ),
-                      ),
-                    )),
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    side: BorderSide(
+                      color: Colors.black38,
+                    ),
+                  ),
+                )),
                 onPressed: onPressNo,
-                child: Text('No',style:
-        TextStyle(color: Colors.black38)),
+                child: Text('No', style: TextStyle(color: Colors.black38)),
               ),
             ),
-
-
           ],
         );
       },
     );
   }
+
   static showAlertYesNoConfirm(
       {required String title,
       required VoidCallback onPressYes,
@@ -99,13 +99,14 @@ class Alerts {
       required BuildContext context}) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          icon:
-          SizedBox(
+          icon: SizedBox(
             height: 80,
             width: 80,
-            child: Lottie.asset('assets/lottie/mail.json',
+            child: Lottie.asset(
+              'assets/lottie/mail.json',
               fit: BoxFit.contain,
             ),
             // child: Lottie.asset('assets/lottie/animation_delete.json',
@@ -114,21 +115,22 @@ class Alerts {
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
           // judul
-          title: Text(title,style: TextStyle(fontSize: 20),),
+          title: Text(
+            title,
+            style: TextStyle(fontSize: 20),
+          ),
           actions: [
             // tombel yes
-            SizedBox(width: 120,
+            SizedBox(
+              width: 120,
               child: ElevatedButton(
                 style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.circular(4))),
-                  backgroundColor:
-                  MaterialStateProperty.all(
-                      Colors.blueAccent),),
+                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4))),
+                  backgroundColor: MaterialStateProperty.all(Colors.blueAccent),
+                ),
                 onPressed: onPressYes,
-                child: Text('Send Mail',style: TextStyle(color: Colors.white)),
+                child: Text('Send Mail', style: TextStyle(color: Colors.white)),
               ),
             ),
             //tombol no
@@ -137,20 +139,17 @@ class Alerts {
               child: TextButton(
                 style: ButtonStyle(
                     shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        side: BorderSide(
-                          color: Colors.black38,
-                        ),
-                      ),
-                    )),
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    side: BorderSide(
+                      color: Colors.black38,
+                    ),
+                  ),
+                )),
                 onPressed: onPressNo,
-                child: Text('No',style:
-        TextStyle(color: Colors.black38)),
+                child: Text('No', style: TextStyle(color: Colors.black38)),
               ),
             ),
-
-
           ],
         );
       },

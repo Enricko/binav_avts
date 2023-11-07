@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:binav_avts/response/websocket/client_response.dart';
+import 'package:binav_avts/response/websocket/ipkapal_response.dart';
 import 'package:binav_avts/response/websocket/kapal_response.dart';
 import 'package:binav_avts/response/websocket/mapping_response.dart';
 import 'package:bloc/bloc.dart';
@@ -35,18 +36,25 @@ class SocketCubit extends Cubit<SocketState> {
       _clientTableStreamController.stream;
   
   // === Mapping Table ===
-  final _mappingTableStreamController = StreamController<MappingResponse>();
+  final _mappingTableStreamController = StreamController<MappingResponse>.broadcast();
 
   // ignore: non_constant_identifier_names
   Stream<MappingResponse> get MappingTableStreamController =>
       _mappingTableStreamController.stream;
 
   // === Kapal Table ===
-  final _kapalTableStreamController = StreamController<KapalResponse>();
+  final _kapalTableStreamController = StreamController<KapalResponse>.broadcast();
 
   // ignore: non_constant_identifier_names
   Stream<KapalResponse> get KapalTableStreamController =>
       _kapalTableStreamController.stream;
+
+  // === Kapal Table ===
+  final _ipKapalTableStreamController = StreamController<IpkapalResponse>.broadcast();
+
+  // ignore: non_constant_identifier_names
+  Stream<IpkapalResponse> get IpKapalTableStreamController =>
+      _ipKapalTableStreamController.stream;
 
 
   void getClientDataTable({required Map<String, dynamic> payload}) {
@@ -109,6 +117,13 @@ class SocketCubit extends Cubit<SocketState> {
         if(TypeSocket.kapal.name.toLowerCase() == message['type'].toString().toLowerCase()) {
           if(message['id_response'] == '1') {
             _kapalTableStreamController.sink.add(KapalResponse.fromJson(message));
+          }
+        }
+
+        // === IP Kapal Listener ===
+        if(TypeSocket.ipkapal.name.toLowerCase() == message['type'].toString().toLowerCase()) {
+          if(message['id_response'] == '1') {
+            _ipKapalTableStreamController.sink.add(IpkapalResponse.fromJson(message));
           }
         }
       }

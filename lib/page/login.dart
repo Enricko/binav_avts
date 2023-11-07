@@ -6,6 +6,7 @@ import 'package:binav_avts/page/screen/intro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -26,11 +27,13 @@ class _LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool invisible = true;
-  bool _isVisible = true;
+  final bool _isVisible = true;
   bool showError = false;
+  bool ignorePointer = false;
 
   // Carousel Variable
-  final PageController _pageController = PageController();
+  // final PageController _pageController = PageController();
+  
   int currentIndex = 0;
   final List<Widget> introPages = [
     const IntroScreen(
@@ -49,9 +52,12 @@ class _LoginState extends State<Login> {
   void initState() {
     super.initState();
     var state = context.read<UserBloc>().state;
+    if(state is UserSignedOut){
+      context.goNamed("main_page");
+    }
     if (state is UserSignedOut && state.type == TypeMessageAuth.Logout) {
-      EasyLoading.showSuccess("${state.message}",
-          duration: Duration(milliseconds: 3000), dismissOnTap: true);
+      EasyLoading.showSuccess(state.message,
+          duration: const Duration(milliseconds: 3000), dismissOnTap: true);
     }
   }
 
@@ -73,205 +79,201 @@ class _LoginState extends State<Login> {
       ),
       body: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
-          if (state is UserSignedOut &&
-              state.type == TypeMessageAuth.Error) {
-            EasyLoading.showError("${state.message}",
-                duration: Duration(milliseconds: 3000), dismissOnTap: true);
+          if (state is UserSignedOut && state.type == TypeMessageAuth.Error) {
+            EasyLoading.showError(state.message,
+                duration: const Duration(milliseconds: 3000), dismissOnTap: true);
             showError = false;
           }
 
-          return Container(
-            child: Row(
-              children: [
-                width <= 540
-                    ? Container()
-                    : Container(
-                        // color: Color(0xFF2B3B9A),
-                        width: width / 2,
-                        height: double.infinity,
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: CarouselSlider(
-                                  options: CarouselOptions(
-                                    height: double.infinity,
-                                    autoPlay: true,
-                                    viewportFraction: 1.0,
-                                    autoPlayAnimationDuration:
-                                        const Duration(milliseconds: 3000),
-                                    // viewportFraction: 0.8,
-                                    onPageChanged: (index, reason) {
-                                      setState(() {
-                                        currentIndex = index;
-                                      });
-                                    },
-                                  ),
-                                  items: introPages),
+          return Row(
+            children: [
+              width <= 540
+                  ? Container()
+                  : SizedBox(
+                      // color: Color(0xFF2B3B9A),
+                      width: width / 2,
+                      height: double.infinity,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: CarouselSlider(
+                                options: CarouselOptions(
+                                  height: double.infinity,
+                                  autoPlay: true,
+                                  viewportFraction: 1.0,
+                                  autoPlayAnimationDuration:
+                                      const Duration(milliseconds: 3000),
+                                  // viewportFraction: 0.8,
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      currentIndex = index;
+                                    });
+                                  },
+                                ),
+                                items: introPages),
+                          ),
+                          DotsIndicator(
+                            dotsCount: introPages.length,
+                            position: currentIndex,
+                            decorator: const DotsDecorator(
+                              color: Colors.grey,
+                              activeColor: Colors.blue,
                             ),
-                            DotsIndicator(
-                              dotsCount: introPages.length,
-                              position: currentIndex,
-                              decorator: const DotsDecorator(
-                                color: Colors.grey,
-                                activeColor: Colors.blue,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                SingleChildScrollView(
-                  child: Container(
-                    width: width <= 540 ? width : width / 2,
-                    padding: const EdgeInsets.all(30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.asset(
-                          "assets/logo.png",
-                          height: 40,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          "${widget.idClient}"
-                          "Hai Welcome to Binav AVTS\n"
-                          "Log in to your Account",
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w600),
-                        ),
-                        Container(
-                          constraints: BoxConstraints(minHeight: 100),
-                        ),
-                        Column(
-                          children: [
-                            // widget.idClient != null ? Text("Email : ${emailController.text}") :
-                            Form(
-                              key: _formKey,
-                              child: Column(
-                                children: [
-                                  Visibility(
-                                    visible: _isVisible,
-                                    child: Container(
-                                      child: TextFormField(
-                                        keyboardType: TextInputType.text,
-                                        controller: emailController,
-                                        textInputAction: TextInputAction.next,
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.isEmpty ||
-                                              value == "") {
-                                            return "The Email field is required.";
-                                          }
-                                          if (!RegExp(
-                                                  r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                                              .hasMatch(value)) {
-                                            return 'Please enter a valid email';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: const InputDecoration(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(20, 3, 1, 3),
-                                          hintText: "Email",
-                                          prefixIcon:
-                                              Icon(Icons.email_outlined),
-                                          // hintStyle: Constants.hintStyle,
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Colors.blueAccent),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Colors.black38)),
-                                          errorBorder: OutlineInputBorder(
+                    ),
+              SingleChildScrollView(
+                child: Container(
+                  width: width <= 540 ? width : width / 2,
+                  padding: const EdgeInsets.all(30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        "assets/logo.png",
+                        height: 40,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "${widget.idClient}"
+                        "Hai Welcome to Binav AVTS\n"
+                        "Log in to your Account",
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w600),
+                      ),
+                      Container(
+                        constraints: const BoxConstraints(minHeight: 100),
+                      ),
+                      Column(
+                        children: [
+                          // widget.idClient != null ? Text("Email : ${emailController.text}") :
+                          Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                Visibility(
+                                  visible: _isVisible,
+                                  child: TextFormField(
+                                    keyboardType: TextInputType.text,
+                                    controller: emailController,
+                                    textInputAction: TextInputAction.next,
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.isEmpty ||
+                                          value == "") {
+                                        return "The Email field is required.";
+                                      }
+                                      if (!RegExp(
+                                              r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+                                          .hasMatch(value)) {
+                                        return 'Please enter a valid email';
+                                      }
+                                      return null;
+                                    },
+                                    decoration: const InputDecoration(
+                                      contentPadding:
+                                          EdgeInsets.fromLTRB(20, 3, 1, 3),
+                                      hintText: "Email",
+                                      prefixIcon:
+                                          Icon(Icons.email_outlined),
+                                      // hintStyle: Constants.hintStyle,
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.blueAccent),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.black38)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1,
+                                              color: Colors.redAccent)),
+                                      focusedErrorBorder:
+                                          OutlineInputBorder(
                                               borderSide: BorderSide(
                                                   width: 1,
                                                   color: Colors.redAccent)),
-                                          focusedErrorBorder:
-                                              OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      width: 1,
-                                                      color: Colors.redAccent)),
-                                          filled: true,
-                                          fillColor: Color(0xF2F2F2F),
-                                        ),
-                                      ),
+                                      filled: true,
+                                      fillColor: Color(0x0f2f2f2f),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  Container(
-                                    child: TextFormField(
-                                      keyboardType: TextInputType.text,
-                                      controller: passwordController,
-                                      textInputAction: TextInputAction.next,
-                                      obscureText: invisible,
-                                      validator: (value) {
-                                        if (value == null ||
-                                            value.isEmpty ||
-                                            value == "") {
-                                          return "The Password field is required.";
-                                        }
-                                        return null;
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                TextFormField(
+                                  keyboardType: TextInputType.text,
+                                  controller: passwordController,
+                                  textInputAction: TextInputAction.next,
+                                  obscureText: invisible,
+                                  validator: (value) {
+                                    if (value == null ||
+                                        value.isEmpty ||
+                                        value == "") {
+                                      return "The Password field is required.";
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.all(5),
+                                    hintText: "Password",
+                                    prefixIcon: const Icon(Icons.key),
+                                    suffixIcon: IconButton(
+                                      icon: Icon((invisible == true)
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off),
+                                      onPressed: () {
+                                        setState(() {
+                                          invisible = !invisible;
+                                        });
                                       },
-                                      decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.all(5),
-                                        hintText: "Password",
-                                        prefixIcon: const Icon(Icons.key),
-                                        suffixIcon: IconButton(
-                                          icon: Icon((invisible == true)
-                                              ? Icons.visibility_outlined
-                                              : Icons.visibility_off),
-                                          onPressed: () {
-                                            setState(() {
-                                              invisible = !invisible;
-                                            });
-                                          },
-                                        ),
-                                        // hintStyle: Constants.hintStyle,
-                                        focusedBorder: const OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              width: 1,
-                                              color: Colors.blueAccent),
-                                        ),
-                                        enabledBorder: const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Colors.black38)),
-                                        errorBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Colors.redAccent)),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Colors.redAccent)),
-                                        filled: true,
-                                        fillColor: const Color(0xF2F2F2F),
-                                      ),
                                     ),
+                                    // hintStyle: Constants.hintStyle,
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1,
+                                          color: Colors.blueAccent),
+                                    ),
+                                    enabledBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.black38)),
+                                    errorBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.redAccent)),
+                                    focusedErrorBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1,
+                                            color: Colors.redAccent)),
+                                    filled: true,
+                                    fillColor: const Color(0x0f2f2f2f),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            Text(
-                              state is UserSignedOut &&
-                                      state.type == TypeMessageAuth.Error
-                                  ? state.message
-                                  : "",
-                              style: TextStyle(color: Colors.redAccent),
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            Container(
+                          ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          Text(
+                            state is UserSignedOut &&
+                                    state.type == TypeMessageAuth.Error
+                                ? state.message
+                                : "",
+                            style: const TextStyle(color: Colors.redAccent),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          IgnorePointer(
+                            ignoring: ignorePointer,
+                            child: Container(
                               margin: const EdgeInsets.only(bottom: 25),
                               width: double.infinity,
                               height: 40,
@@ -288,8 +290,12 @@ class _LoginState extends State<Login> {
                                 onPressed: () async {
                                   // _isVisible == true ? loginAdmin() : loginClient();
                                   if (_formKey.currentState!.validate()) {
-                                    // If the form is valid, display a snackbar. In the real world,
-                                    // you'd often call a server or save the information in a database.
+                                    setState(() {
+                                      ignorePointer = true;
+                                      Timer(const Duration(seconds: 3), () {
+                                        ignorePointer = false;
+                                      });
+                                    });
                                     await EasyLoading.show(
                                         status: "Loading...");
                                     context.read<UserBloc>().add(SignIn(
@@ -305,14 +311,14 @@ class _LoginState extends State<Login> {
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         },
       ),

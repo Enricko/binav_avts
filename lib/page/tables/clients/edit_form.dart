@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:binav_avts/response/websocket/client_response.dart'
     as ClientResponse;
-import 'package:binav_avts/services/client.dataservice.dart';
+import 'package:binav_avts/services/client_dataservice.dart';
 import 'package:binav_avts/utils/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -19,6 +21,7 @@ class _EditClientState extends State<EditClient> {
   TextEditingController emailController = TextEditingController();
 
   bool isSwitched = false;
+  bool ignorePointer = false;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -39,188 +42,201 @@ class _EditClientState extends State<EditClient> {
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    return SizedBox(
-      width: width / 3,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            color: Colors.black12,
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  " Edit Client",
-                  style: GoogleFonts.openSans(
-                      fontSize: 15, fontWeight: FontWeight.bold),
-                ),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isSwitched = false;
-                    });
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 485,
-            child: Padding( 
+    return SingleChildScrollView(
+      child: SizedBox(
+        width: width <= 540 ? width / 1.3 : width / 1.6,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              color: Colors.black12,
               padding: const EdgeInsets.all(8),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          CustomTextField(
-                            controller: nameController,
-                            hint: 'Name',
-                            type: TextInputType.text,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  value == "") {
-                                return "The Name field is required.";
-                              }
-                              return null;
-                            },
-                          ),
-                          CustomTextField(
-                            controller: emailController,
-                            hint: 'Email',
-                            type: TextInputType.text,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  value == "") {
-                                return "The Email field is required.";
-                              }
-                              if (!RegExp(
-                                      r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                                  .hasMatch(value)) {
-                                return 'Please enter a valid email';
-                              }
-                              return null;
-                            },
-                          ),
-                        ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    " Edit Client",
+                    style: GoogleFonts.openSans(
+                        fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isSwitched = false;
+                      });
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 485,
+              child: Padding( 
+                padding: const EdgeInsets.all(8),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 5,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: FittedBox(
-                        fit: BoxFit.fill,
-                        child: Switch(
-                          value: isSwitched,
-                          onChanged: (bool value) {
-                            setState(() {
-                              isSwitched = value;
-                            });
-                          },
-                          activeTrackColor: Colors.lightGreen,
-                          activeColor: Colors.green,
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            CustomTextField(
+                              controller: nameController,
+                              hint: 'Name',
+                              type: TextInputType.text,
+                              validator: (value) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    value == "") {
+                                  return "The Name field is required.";
+                                }
+                                return null;
+                              },
+                            ),
+                            CustomTextField(
+                              controller: emailController,
+                              hint: 'Email',
+                              type: TextInputType.text,
+                              validator: (value) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    value == "") {
+                                  return "The Email field is required.";
+                                }
+                                if (!RegExp(
+                                        r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+                                    .hasMatch(value)) {
+                                  return 'Please enter a valid email';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.blueAccent),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      SizedBox(
+                        height: 40,
+                        child: FittedBox(
+                          fit: BoxFit.fill,
+                          child: Switch(
+                            value: isSwitched,
+                            onChanged: (bool value) {
+                              setState(() {
+                                isSwitched = value;
+                              });
+                            },
+                            activeTrackColor: Colors.lightGreen,
+                            activeColor: Colors.green,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IgnorePointer(
+                            ignoring: ignorePointer,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.blueAccent),
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  // If the form is valid, display a snackbar. In the real world,
+                                  // you'd often call a server or save the information in a database.
+                                  // ScaffoldMessenger.of(context).showSnackBar(
+                                  //   const SnackBar(
+                                  //       content: Text('Processing Data')),
+                                  // );
+                                  setState(() {
+                                      ignorePointer = true;
+                                      Timer(Duration(seconds: 3), () {
+                                        ignorePointer = false;
+                                      });
+                                    });
+                                EasyLoading.show(status: "Loading...");
+                          
+                                  ClientDataService()
+                                      .editClient(
+                                          id_client: widget.data.idClient!,
+                                          client_name: nameController.text,
+                                          email: emailController.text,
+                                          isSwitched: isSwitched)
+                                      .then((value) {
+                                    if (value.status == 200) {
+                                      setState(() {
+                                        isSwitched = false;
+                                      });
+                                      EasyLoading.showSuccess(value.message!,
+                                          duration: Duration(seconds: 3),
+                                          dismissOnTap: true);
+                                      Navigator.pop(context);
+                                    } else {
+                                      EasyLoading.showError(value.message!,
+                                          duration: Duration(seconds: 3),
+                                          dismissOnTap: true);
+                                    }
+                                  });
+                                }
+                              },
+                              child: Text(
+                                "Submit",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              // If the form is valid, display a snackbar. In the real world,
-                              // you'd often call a server or save the information in a database.
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Processing Data')),
-                              );
-                              ClientDataService()
-                                  .editClient(
-                                      id_client: widget.data.idClient!,
-                                      client_name: nameController.text,
-                                      email: emailController.text,
-                                      isSwitched: isSwitched)
-                                  .then((value) {
-                                if (value.status == 200) {
-                                  setState(() {
-                                    isSwitched = false;
-                                  });
-                                  EasyLoading.showSuccess(value.message!,
-                                      duration: Duration(seconds: 3),
-                                      dismissOnTap: true);
-                                  Navigator.pop(context);
-                                } else {
-                                  EasyLoading.showError(value.message!,
-                                      duration: Duration(seconds: 3),
-                                      dismissOnTap: true);
-                                }
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          TextButton(
+                            style: ButtonStyle(
+                                shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                        side: BorderSide(
+                                            color: Colors.blueAccent)))),
+                            onPressed: () {
+                              setState(() {
+                                isSwitched = false;
                               });
-                            }
-                          },
-                          child: Text(
-                            "Submit",
-                            style: TextStyle(
-                              color: Colors.white,
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(
+                                color: Colors.blueAccent,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        TextButton(
-                          style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                      side: BorderSide(
-                                          color: Colors.blueAccent)))),
-                          onPressed: () {
-                            setState(() {
-                              isSwitched = false;
-                            });
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            "Cancel",
-                            style: TextStyle(
-                              color: Colors.blueAccent,
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -9,8 +9,7 @@ final class SignIn extends UserEvent{
 
   SignIn({required this.email,required this.password});
 
-  @override
-  List<Object> get props =>[email,password];
+  List<Object> get props => [email,password];
 }
 
 final class SignOut extends UserEvent{}

@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:binav_avts/bloc/websocket/socket_cubit.dart';
 import 'package:binav_avts/bloc/user/user_bloc.dart';
-import 'package:binav_avts/bloc/websocket/socket_cubit.dart';
 import 'package:binav_avts/page/tables/clients/client.dart';
-import 'package:binav_avts/response/websocket/client_response.dart';
+import 'package:binav_avts/page/tables/kapal/kapal.dart';
+import 'package:binav_avts/page/tables/pipeline/pipeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -25,13 +23,13 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
-      BlocProvider.of<SocketCubit>(context).getKapalDataTable(payload: {
-        // "id_client": "lHzJTM7oz1FhePXCfTEh",
-        "page": 1,
-        "perpage": 10
-      });
-    });
+    // _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
+    //   BlocProvider.of<SocketCubit>(context).getKapalDataTable(payload: {
+    //     // "id_client": "lHzJTM7oz1FhePXCfTEh",
+    //     "page": 1,
+    //     "perpage": 10
+    //   });
+    // });
     super.initState();
   }
 
@@ -72,40 +70,34 @@ class _MainPageState extends State<MainPage> {
               ],
               onSelected: (item) {
                 switch (item) {
-                  // case "vesselList":
-                  //   showDialog(
-                  //       context: context,
-                  //       barrierDismissible: false,
-                  //       builder: (BuildContext context) {
-                  //         return Dialog(
-                  //             shape: const RoundedRectangleBorder(
-                  //                 borderRadius:
-                  //                     BorderRadius.all(Radius.circular(5))),
-                  //             child: VesselPage(id_client: widget.idClient));
-                  //       });
-                  // case "pipelineList":
-                  //   showDialog(
-                  //       context: context,
-                  //       barrierDismissible: false,
-                  //       builder: (BuildContext context) {
-                  //         var height = MediaQuery.of(context).size.height;
-                  //         var width = MediaQuery.of(context).size.width;
-
-                  //         return Dialog(
-                  //           shape: const RoundedRectangleBorder(
-                  //               borderRadius:
-                  //                   BorderRadius.all(Radius.circular(5))),
-                  //           child: PipelinePage(id_client: widget.idClient),
-                  //         );
-                  //       });
+                  case "vesselList":
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5))),
+                              child: KapalTablePage(idClient: widget.idClient));
+                        });
+                  case "pipelineList":
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5))),
+                            child: PipelineTablePage(idClient: widget.idClient),
+                          );
+                        });
                   case "clientList":
                     showDialog(
                         context: context,
                         barrierDismissible: false,
                         builder: (BuildContext context) {
-                          var height = MediaQuery.of(context).size.height;
-                          var width = MediaQuery.of(context).size.width;
-
                           return Dialog(
                             shape: const RoundedRectangleBorder(
                                 borderRadius:
@@ -116,9 +108,7 @@ class _MainPageState extends State<MainPage> {
                 }
               },
             ),
-            Container(
-              child: Text(widget.idClient),
-            ),
+            Text(widget.idClient),
           ],
         ),
       ),
@@ -153,7 +143,9 @@ class _MainPageState extends State<MainPage> {
                     Text(state is UserSignedIn
                         ? state.user.client!.idClient.toString()
                         : ""),
-                    ClientTablePage(),
+                    const KapalTablePage(),
+                    // PipelineTablePage(),
+                    // ClientTablePage(),
                     ElevatedButton(
                         onPressed: () {
                           EasyLoading.show(status: "Loading...");

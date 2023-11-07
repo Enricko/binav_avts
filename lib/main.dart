@@ -1,3 +1,4 @@
+import 'package:binav_avts/bloc/general/general_cubit.dart';
 import 'package:binav_avts/bloc/user/user_bloc.dart';
 import 'package:binav_avts/bloc/websocket/socket_cubit.dart';
 import 'package:binav_avts/services/user_dataservice.dart';
@@ -87,12 +88,13 @@ class _MyAppState extends State<MyApp> {
             ..add(CheckSignInStatus()),
         ),
         BlocProvider(create: (BuildContext context) => SocketCubit()..listen()),
+        BlocProvider(create: (BuildContext context) => GeneralCubit()),
       ],
       child: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserSignedIn) {
-            EasyLoading.showSuccess("Welcome Back",
-                duration: Duration(milliseconds: 2000), dismissOnTap: true);
+            // EasyLoading.showSuccess("Welcome Back",
+            //     duration: Duration(milliseconds: 2000), dismissOnTap: true);
             router.goNamed("main_page");
           } else if (state is UserSignedOut) {
             router.goNamed('login');

@@ -10,14 +10,14 @@ class CustomTextField extends StatelessWidget {
     required this.type,
     this.initValue,
     this.validator,
-    this.enable,
+    this.readOnly = false,
   });
 
   final TextEditingController controller;
   final String hint;
   final String? Function(String? value)? validator;
   final String? initValue;
-  final bool? enable;
+  final bool? readOnly;
   final TextInputType type;
 
   @override
@@ -29,6 +29,7 @@ class CustomTextField extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: TextFormField(
+            readOnly: readOnly!,
             style: const TextStyle(fontSize: 14),
             controller: controller,
             initialValue: initValue,
@@ -36,7 +37,7 @@ class CustomTextField extends StatelessWidget {
             validator: validator,
             decoration: InputDecoration(
                 contentPadding: const EdgeInsets.fromLTRB(8, 3, 1, 3),
-                enabled: (enable == null) ? true : false,
+                // enabled: (readOnly == null) ? true : false,
                 // hintText: hint,
                 // labelText: hint,
                 // floatingLabelBehavior: FloatingLabelBehavior.always ,

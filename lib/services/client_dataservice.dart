@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:binav_avts/response/send_response.dart';
 import 'package:dio/dio.dart';
-import 'package:binav_avts/response/user_response.dart';
 
 enum TypeMessageAuth {
   Error,
@@ -27,7 +24,6 @@ class ClientDataService {
         'password_confirmation': password_confirmation,
         'status': isSwitched == true ? '1': '0',
       });
-      print(response.data);
       return SendResponse.fromJson(response.data);
     } catch (e) {
       if (e is DioError) {
@@ -82,6 +78,7 @@ class ClientDataService {
       return throw Exception();
     }
   }
+
   Future<SendResponse> sendMailToClient({required String token,required String id_client}) async {
     try {
       dio.options.headers['Authorization'] = "Bearer $token";
@@ -99,20 +96,4 @@ class ClientDataService {
     }
   }
 
-  // Future<UserResponse> logout({required String token}) async {
-  //   try {
-  //     dio.options.headers['Authorization'] = "Bearer $token";
-  //     final response = await dio.post("/api/logout");
-  //     return UserResponse.fromJson(response.data);
-  //   } catch (e) {
-  //     if (e is DioError) {
-  //       if (e.response != null) {
-  //         return UserResponse.fromJson(e.response!.data);
-  //       } else {
-  //         return throw ('Error message: ${e.message}');
-  //       }
-  //     }
-  //     return throw Exception();
-  //   }
-  // }
 }

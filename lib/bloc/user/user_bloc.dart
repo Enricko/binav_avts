@@ -1,7 +1,7 @@
 import 'package:binav_avts/services/user_dataservice.dart';
 import 'package:binav_avts/response/user_response.dart';
 import 'package:bloc/bloc.dart';
-import 'package:dio/dio.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,6 +25,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           pref.setString('token', getUser.token!);
 
           emit(UserSignedIn(user:getUser));
+          await EasyLoading.dismiss();
         }else{
           emit(UserSignedOut());
           emit(UserSignedOut(message:getUser.message!,type: TypeMessageAuth.Error));

@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:binav_avts/bloc/websocket/socket_cubit.dart';
-import 'package:binav_avts/page/tables/pipeline/add_form.dart';
-import 'package:binav_avts/page/tables/pipeline/edit_form.dart';
-import 'package:binav_avts/response/websocket/mapping_response.dart';
-import 'package:binav_avts/services/pipeline_dataservice.dart';
+import 'package:binav_avts/page/tables/kapal/add_form.dart';
+import 'package:binav_avts/page/tables/kapal/edit_form.dart';
+import 'package:binav_avts/page/tables/kapal/ip_kapal/ip_kapal.dart';
+import 'package:binav_avts/response/websocket/kapal_response.dart';
+import 'package:binav_avts/services/kapal/kapal_dataservice.dart';
 import 'package:binav_avts/utils/alerts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,23 +14,23 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pagination_flutter/pagination.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PipelineTablePage extends StatefulWidget {
-  const PipelineTablePage({super.key, this.idClient = ""});
+class KapalTablePage extends StatefulWidget {
+  const KapalTablePage({super.key, this.idClient = ""});
   final String idClient;
 
   @override
-  State<PipelineTablePage> createState() => _PipelineTablePageState();
+  State<KapalTablePage> createState() => _KapalTablePageState();
 }
 
-class _PipelineTablePageState extends State<PipelineTablePage> {
+class _KapalTablePageState extends State<KapalTablePage> {
   int page = 1;
   int perpage = 10;
   int? totalPage;
 
   Timer? _timer;
   bool isSwitched = false;
-  bool load = false;
   bool ignorePointer = false;
+  bool load = false;
 
   incrementPage(int pageIndex) {
     setState(() {
@@ -42,7 +43,7 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
   void initState() {
     _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
       BlocProvider.of<SocketCubit>(context)
-          .getMappingDataTable(payload: {"id_client": widget.idClient, "page": page, "perpage": perpage});
+          .getKapalDataTable(payload: {"id_client": widget.idClient, "page": page, "perpage": perpage});
       setState(() {
         load = false;
       });
@@ -72,7 +73,7 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Pipeline List",
+                  " Vessel List",
                   style: GoogleFonts.openSans(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
@@ -103,19 +104,18 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
                                   RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
                               backgroundColor: MaterialStateProperty.all(Colors.blueAccent)),
                           onPressed: () {
-                            ///FUNCTION ADD CLIENT
                             showDialog(
                                 context: context,
                                 barrierDismissible: false,
                                 builder: (BuildContext context) {
                                   return const Dialog(
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                                    child: AddPipeline(),
+                                    child: AddKapal(),
                                   );
                                 });
                           },
                           child: const Text(
-                            "Add Pipeline",
+                            "Add Vessel",
                             style: TextStyle(
                               color: Colors.white,
                             ),
@@ -126,8 +126,8 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
               ],
             ),
           ),
-          StreamBuilder<MappingResponse>(
-            stream: BlocProvider.of<SocketCubit>(context).MappingTableStreamController,
+          StreamBuilder<KapalResponse>(
+            stream: BlocProvider.of<SocketCubit>(context).KapalTableStreamController,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return const Center(
@@ -140,62 +140,106 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
                 );
               }
               if (snapshot.hasData) {
-                MappingResponse data = snapshot.data!;
+                KapalResponse data = snapshot.data!;
                 totalPage = data.total;
-                return Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 15),
-                    child: SingleChildScrollView(
-                      child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: DataTable(
+                return Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(horizontal: 15),
+                  child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: load
+                          ? const Center(child: CircularProgressIndicator())
+                          : DataTable(
                               headingRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3)),
                               columns: const [
-                                DataColumn(label: Text("Name")),
-                                DataColumn(label: Text("File")),
-                                DataColumn(label: Text("Switch")),
+                                DataColumn(label: Text("CallSign")),
+                                DataColumn(label: Text("Flag")),
+                                DataColumn(label: Text("Class")),
+                                DataColumn(label: Text("Builder")),
+                                DataColumn(label: Text("Year Built")),
+                                DataColumn(label: Text("Size")),
+                                DataColumn(label: Text("File XML")),
+                                DataColumn(label: Text("Upload IP ")),
                                 DataColumn(label: Text("Action")),
                               ],
                               rows: data.data!.map((value) {
-                                return DataRow(
-                                  cells: [
-                                    DataCell(Text(value.name!)),
-                                    DataCell(
-                                        Text(value.file!.replaceAll("https://api.binav-avts.id/storage/mapping/", ""))),
-                                    DataCell(Text(value.onOff! ? "ON" : "OFF")),
-                                    DataCell(Row(
-                                      children: [
-                                        Tooltip(
-                                          message: "Edit",
-                                          child: IconButton(
-                                            icon: const Icon(
-                                              Icons.edit,
-                                              color: Colors.blue,
-                                            ),
-                                            onPressed: () {
-                                              showDialog(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (BuildContext context) {
-                                                    return Dialog(
-                                                      shape: const RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.all(Radius.circular(5))),
-                                                      child: EditPipeline(data: value),
-                                                    );
-                                                  });
-                                            },
+                                return DataRow(cells: [
+                                  DataCell(Text(value.callSign!)),
+                                  DataCell(Text(value.flag!)),
+                                  DataCell(Text(value.kelas!)),
+                                  DataCell(Text(value.builder!)),
+                                  DataCell(Text(value.yearBuilt!)),
+                                  DataCell(Text(value.size!)),
+                                  DataCell(SizedBox(
+                                    width: 150,
+                                    child: Text(
+                                      value.xmlFile!.replaceAll("https://api.binav-avts.id/storage/xml/", ""),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                    ),
+                                  )),
+                                  DataCell(Tooltip(
+                                    message: "Ip Kapal",
+                                    child: IconButton(
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (BuildContext context) {
+                                                return Dialog(
+                                                  shape: const RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.all(Radius.circular(5))),
+                                                  child: IpKapalPage(callSign: value.callSign!),
+                                                );
+                                              });
+                                        },
+                                        icon: const Icon(Icons.edit_location_alt_outlined)),
+                                  )),
+                                  DataCell(Row(
+                                    children: [
+                                      Tooltip(
+                                        message: "View Detail",
+                                        child: IconButton(
+                                          icon: const Icon(
+                                            Icons.visibility,
+                                            color: Colors.blue,
                                           ),
+                                          onPressed: () {
+                                            // showDetailVessel(
+                                            //     data, context, value);
+                                          },
                                         ),
-                                        Tooltip(
-                                          message: "Delete",
-                                          child: IconButton(
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            ),
-                                            onPressed: () {
-                                              Alerts.showAlertYesNo(
+                                      ),
+                                      Tooltip(
+                                        message: "Edit",
+                                        child: IconButton(
+                                          icon: const Icon(
+                                            Icons.edit,
+                                            color: Colors.blue,
+                                          ),
+                                          onPressed: () {
+                                            showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (BuildContext context) {
+                                                  return Dialog(
+                                                    shape: const RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                                                    child: EditKapal(data: value),
+                                                  );
+                                                });
+                                          },
+                                        ),
+                                      ),
+                                      Tooltip(
+                                        message: "Delete",
+                                        child: IconButton(
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () {
+                                            Alerts.showAlertYesNo(
                                                 title: "Are you sure you want to delete this data?",
                                                 onPressYes: () async {
                                                   if (!ignorePointer) {
@@ -208,10 +252,10 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
                                                     EasyLoading.show(status: "Loading...");
                                                     try {
                                                       SharedPreferences pref = await SharedPreferences.getInstance();
-                                                      PipelineDataService()
-                                                          .deletePipeline(
+                                                      KapalDataService()
+                                                          .deleteKapal(
                                                               token: pref.getString("token")!,
-                                                              id_mapping: value.idMapping.toString())
+                                                              call_sign: value.callSign.toString())
                                                           .then((val) {
                                                         if (val.status == 200) {
                                                           EasyLoading.showSuccess(val.message!,
@@ -232,18 +276,14 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
                                                 onPressNo: () {
                                                   Navigator.pop(context);
                                                 },
-                                                context: context,
-                                              );
-                                            },
-                                          ),
+                                                context: context);
+                                          },
                                         ),
-                                      ],
-                                    )),
-                                  ],
-                                );
+                                      ),
+                                    ],
+                                  )),
+                                ]);
                               }).toList())),
-                    ),
-                  ),
                 );
               }
               return const Center(
