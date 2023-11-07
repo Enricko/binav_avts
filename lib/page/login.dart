@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key, this.idClient = ""});
@@ -52,9 +53,8 @@ class _LoginState extends State<Login> {
   void initState() {
     super.initState();
     var state = context.read<UserBloc>().state;
-    if(state is UserSignedOut){
-      context.goNamed("main_page");
-    }
+    
+    // checkUser(state);
     if (state is UserSignedOut && state.type == TypeMessageAuth.Logout) {
       EasyLoading.showSuccess(state.message,
           duration: const Duration(milliseconds: 3000), dismissOnTap: true);

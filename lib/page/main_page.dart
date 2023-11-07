@@ -19,25 +19,25 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   // final WebSocketDataService clientData = WebSocketDataService();
   // // final WebSocketDataService _clientData = WebSocketDataService();
-  Timer? _timer;
+  // Timer? _timer;
 
-  @override
-  void initState() {
-    // _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
-    //   BlocProvider.of<SocketCubit>(context).getKapalDataTable(payload: {
-    //     // "id_client": "lHzJTM7oz1FhePXCfTEh",
-    //     "page": 1,
-    //     "perpage": 10
-    //   });
-    // });
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   // _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
+  //   //   BlocProvider.of<SocketCubit>(context).getKapalDataTable(payload: {
+  //   //     // "id_client": "lHzJTM7oz1FhePXCfTEh",
+  //   //     "page": 1,
+  //   //     "perpage": 10
+  //   //   });
+  //   // });
+  //   super.initState();
+  // }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _timer!.cancel();
-  }
+  // @override
+  // void dispose() {
+  //   // _timer!.cancel();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {

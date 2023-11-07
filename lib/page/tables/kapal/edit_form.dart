@@ -302,71 +302,70 @@ class _EditKapalState extends State<EditKapal> {
                               ),
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                try {
-                                  // Prevent Multiple Clicked
-                                  setState(() {
-                                    ignorePointer = true;
-                                    Timer(Duration(seconds: 3), () {
-                                      ignorePointer = false;
-                                    });
-                                  });
-                                  EasyLoading.show(status: "Loading...");
-
-                                  var data = {
-                                    "old_call_sign": widget.data.callSign,
-                                    "call_sign": callsignController.text,
-                                    "flag": flagController.text,
-                                    "class": classController.text,
-                                    "builder": builderController.text,
-                                    "year_built": yearbuiltController.text,
-                                    "size": vesselSize
-                                  };
-
-                                  if (filePickerVal != null) {
-                                    KapalDataService()
-                                        .editKapal(
-                                            isSwitched: isSwitched,
-                                            fileName: FilePickerController.text,
-                                            file: filePickerVal!,
-                                            data:data)
-                                        .then((value) {
-                                      if (value.status == 200) {
-                                        EasyLoading.showSuccess(value.message!,
-                                            duration: Duration(seconds: 3), dismissOnTap: true);
-                                        Navigator.pop(context);
-                                      } else {
-                                        EasyLoading.showError(value.message!,
-                                            duration: Duration(seconds: 3), dismissOnTap: true);
-                                      }
-                                    }).whenComplete(() {
-                                      Timer(Duration(seconds: 5), () {
-                                        EasyLoading.dismiss();
+                                  try {
+                                    // Prevent Multiple Clicked
+                                    setState(() {
+                                      ignorePointer = true;
+                                      Timer(Duration(seconds: 3), () {
+                                        ignorePointer = false;
                                       });
                                     });
-                                  } else {
-                                    KapalDataService()
-                                        .editKapalNoFile(
-                                            isSwitched: isSwitched,data:data)
-                                        .then((value) {
-                                      if (value.status == 200) {
-                                        EasyLoading.showSuccess(value.message!,
-                                            duration: Duration(seconds: 3), dismissOnTap: true);
-                                        Navigator.pop(context);
-                                      } else {
-                                        EasyLoading.showError(value.message!,
-                                            duration: Duration(seconds: 3), dismissOnTap: true);
-                                      }
-                                    }).whenComplete(() {
-                                      Timer(Duration(seconds: 5), () {
-                                        EasyLoading.dismiss();
+                                    EasyLoading.show(status: "Loading...");
+
+                                    var data = {
+                                      "old_call_sign": widget.data.callSign,
+                                      "call_sign": callsignController.text,
+                                      "flag": flagController.text,
+                                      "class": classController.text,
+                                      "builder": builderController.text,
+                                      "year_built": yearbuiltController.text,
+                                      "size": vesselSize
+                                    };
+
+                                    if (filePickerVal != null) {
+                                      KapalDataService()
+                                          .editKapal(
+                                              isSwitched: isSwitched,
+                                              fileName: FilePickerController.text,
+                                              file: filePickerVal!,
+                                              data: data)
+                                          .then((value) {
+                                        if (value.status == 200) {
+                                          EasyLoading.showSuccess(value.message!,
+                                              duration: Duration(seconds: 3), dismissOnTap: true);
+                                          Navigator.pop(context);
+                                        } else {
+                                          EasyLoading.showError(value.message!,
+                                              duration: Duration(seconds: 3), dismissOnTap: true);
+                                        }
+                                      }).whenComplete(() {
+                                        Timer(Duration(seconds: 5), () {
+                                          EasyLoading.dismiss();
+                                        });
                                       });
-                                    });
+                                    } else {
+                                      KapalDataService()
+                                          .editKapalNoFile(isSwitched: isSwitched, data: data)
+                                          .then((value) {
+                                        if (value.status == 200) {
+                                          EasyLoading.showSuccess(value.message!,
+                                              duration: Duration(seconds: 3), dismissOnTap: true);
+                                          Navigator.pop(context);
+                                        } else {
+                                          EasyLoading.showError(value.message!,
+                                              duration: Duration(seconds: 3), dismissOnTap: true);
+                                        }
+                                      }).whenComplete(() {
+                                        Timer(Duration(seconds: 5), () {
+                                          EasyLoading.dismiss();
+                                        });
+                                      });
+                                    }
+                                  } catch (e) {
+                                    print("adads $e");
+                                    EasyLoading.showError(e.toString());
                                   }
-                                } catch (e) {
-                                  print("adads $e");
-                                  EasyLoading.showError(e.toString());
                                 }
-                              }
                               },
                               child: const Text(
                                 "Submit",

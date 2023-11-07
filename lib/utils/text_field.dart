@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'constants.dart';
 
@@ -10,12 +11,14 @@ class CustomTextField extends StatelessWidget {
     required this.type,
     this.initValue,
     this.validator,
+    this.inputFormatters,
     this.readOnly = false,
   });
 
   final TextEditingController controller;
   final String hint;
   final String? Function(String? value)? validator;
+  final List<TextInputFormatter>? inputFormatters;
   final String? initValue;
   final bool? readOnly;
   final TextInputType type;
@@ -35,6 +38,7 @@ class CustomTextField extends StatelessWidget {
             initialValue: initValue,
             keyboardType: type,
             validator: validator,
+            inputFormatters: inputFormatters,
             decoration: InputDecoration(
                 contentPadding: const EdgeInsets.fromLTRB(8, 3, 1, 3),
                 // enabled: (readOnly == null) ? true : false,
