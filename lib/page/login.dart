@@ -79,11 +79,11 @@ class _LoginState extends State<Login> {
       ),
       body: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
-          // if (state is UserSignedOut && state.type == TypeMessageAuth.Error) {
-          //   EasyLoading.showError(state.message,
-          //       duration: const Duration(milliseconds: 3000), dismissOnTap: true);
-          //   showError = false;
-          // }
+          if (state is UserSignedOut && state.type == TypeMessageAuth.Error && showError) {
+            EasyLoading.showError(state.message,
+                duration: const Duration(milliseconds: 3000), dismissOnTap: true);
+            showError = false;
+          }
 
           return Row(
             children: [
@@ -294,6 +294,7 @@ class _LoginState extends State<Login> {
                                       ignorePointer = true;
                                       Timer(const Duration(seconds: 3), () {
                                         ignorePointer = false;
+                                        showError = true;
                                       });
                                     });
                                     await EasyLoading.show(
