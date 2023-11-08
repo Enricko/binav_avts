@@ -15,6 +15,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       if(state is UserSignedOut){
         final getUser = await userDataSource.login(email: event.email, password: event.password);
 
+        var user = getUser.user!.name!;
+
         if(getUser.token != null){
           SharedPreferences pref = await SharedPreferences.getInstance();
           if(getUser.client!.idClient != null){
