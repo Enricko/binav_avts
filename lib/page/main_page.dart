@@ -11,6 +11,7 @@ import 'package:binav_avts/page/tables/pipeline/pipeline.dart';
 import 'package:binav_avts/utils/constants.dart';
 import 'package:binav_avts/utils/maps_utils/pipeline_layer.dart';
 import 'package:binav_avts/utils/maps_utils/vessel.dart';
+import 'package:binav_avts/utils/maps_utils/vessel_details.dart';
 import 'package:binav_avts/utils/scale_bar/scale_bar.dart';
 import 'package:binav_avts/utils/zoom_buttons.dart';
 import 'package:flutter/material.dart';
@@ -115,6 +116,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    BlocProvider.of<SocketCubit>(context).getKapalCoorDataMarker(payload: {
+      "id_client": widget.idClient,
+      "page": 1,
+      "perpage": 100
+    });
     _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
       BlocProvider.of<SocketCubit>(context).getKapalCoorDataMarker(payload: {
         "id_client": widget.idClient,
@@ -153,7 +159,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   position: PopupMenuPosition.under,
                   icon: const Icon(Icons.menu),
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'vesselList',
                       child: Text('Vessel List'),
                     ),
@@ -262,8 +268,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                           ),
 
                           /// widget berisi detail informasi kapal
-                          // if (value.vesselClick! != "")
-                          //   VesselDetail(call_sign: value.vesselClick!)
+                          if (BlocProvider.of<GeneralCubit>(context).vesselClicked != null)
+                            VesselDetail(),
                         ],
                         children: [
                           TileLayer(

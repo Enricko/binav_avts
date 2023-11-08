@@ -5,6 +5,7 @@ import 'package:binav_avts/services/user_dataservice.dart';
 import 'package:binav_avts/page/login.dart';
 import 'package:binav_avts/page/main_page.dart';
 import 'package:binav_avts/page/screen/splash.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +26,7 @@ void configLoading() {
 }
 
 void main() {
-  usePathUrlStrategy();
+  // usePathUrlStrategy();
   runApp(MyApp());
   configLoading();
 }
@@ -84,8 +85,7 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => UserBloc(userDataSource: UserDataService())
-            ..add(CheckSignInStatus()),
+          create: (context) => UserBloc(userDataSource: UserDataService())..add(CheckSignInStatus()),
         ),
         BlocProvider(create: (BuildContext context) => SocketCubit()..listen()),
         BlocProvider(create: (BuildContext context) => GeneralCubit()),
@@ -107,6 +107,14 @@ class _MyAppState extends State<MyApp> {
           routeInformationProvider: router.routeInformationProvider,
           debugShowCheckedModeBanner: false,
           builder: EasyLoading.init(),
+          scrollBehavior: MaterialScrollBehavior().copyWith(
+            dragDevices: {
+              PointerDeviceKind.mouse,
+              PointerDeviceKind.touch,
+              PointerDeviceKind.stylus,
+              PointerDeviceKind.unknown
+            },
+          ),
           // home: const MyHomePage(title: 'Flutter Demo Home Page'),
         ),
       ),

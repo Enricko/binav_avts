@@ -10,6 +10,8 @@ class GeneralCubit extends Cubit<GeneralState> {
   KapalcoorResponse.Data? _vesselClicked;
   KapalcoorResponse.Data? get vesselClicked =>  _vesselClicked;
 
+  bool? get vesselClickedBool =>  _vesselClicked = null;
+
   set vesselClick(KapalcoorResponse.Data data){
     _vesselClicked = data;
   }

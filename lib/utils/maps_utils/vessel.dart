@@ -4,6 +4,7 @@ import 'package:binav_avts/bloc/websocket/socket_cubit.dart';
 import 'package:binav_avts/response/websocket/kapalcoor_response.dart' as KapalcoorResponse;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -101,6 +102,7 @@ class _MarkerVesselState extends State<MarkerVessel> with TickerProviderStateMix
   }
 
   Future<void> searchVessel(KapalcoorResponse.Data vessel) async {
+    EasyLoading.show(status: "Loading...");
     BlocProvider.of<GeneralCubit>(context).vesselClick = vessel;
     Future.delayed(const Duration(seconds: 1), () {
       // readNotifier.initLatLangCoor(call_sign: callSign);
