@@ -35,6 +35,9 @@ dependencies:
   flutter_styled_toast: ^2.2.1
   lottie: ^2.7.0
 
+  # Assets Manager
+  flutter_svg: ^2.0.9
+
   # Fonts
   google_fonts: ^6.1.0
 
@@ -84,3 +87,6 @@ flutter:
     - assets/intro2.jpg
     - assets/intro3.jpg
     - assets/intro4.jpg
+    - assets/vector1.jpg
+    - assets/vector2.svg
+
