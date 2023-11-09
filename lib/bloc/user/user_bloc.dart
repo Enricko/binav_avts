@@ -12,60 +12,59 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final UserDataService userDataSource;
   UserBloc({required this.userDataSource}) : super(UserSignedOut()) {
     on<SignIn>((event, emit) async {
-      if(state is UserSignedOut){
+      if (state is UserSignedOut) {
         final getUser = await userDataSource.login(email: event.email, password: event.password);
 
-        if(getUser.message!.contains("Login Success")){
+        if (getUser.message!.contains("Login Success")) {
           SharedPreferences pref = await SharedPreferences.getInstance();
-          if(getUser.client!.idClient != null){
+          if (getUser.client!.idClient != null) {
             pref.setString('idClient', getUser.client!.idClient!);
           }
           pref.setString('idUser', getUser.user!.idUser!);
           pref.setString('email', event.email);
           pref.setString('token', getUser.token!);
 
-          emit(UserSignedIn(user:getUser));
+          emit(UserSignedIn(user: getUser));
           await EasyLoading.dismiss();
-        }else{
-          emit(UserSignedOut());
-          emit(UserSignedOut(message:getUser.message!,type: TypeMessageAuth.Error));
+        } else {
+          EasyLoading.showError(getUser.message!, duration: const Duration(milliseconds: 3000), dismissOnTap: true);
+          emit(UserSignedOut(message: getUser.message!, type: TypeMessageAuth.Error));
         }
       }
     });
     on<SignOut>((event, emit) async {
       SharedPreferences pref = await SharedPreferences.getInstance();
-      try { 
-        final getUser = await userDataSource.logout(token: pref.getString("token").toString());
-        pref.remove('idClient');
-        pref.remove('idUser');
-        pref.remove('email');
-        pref.remove('token');
-        if (getUser.message != null) {
-          emit(UserSignedOut(message: getUser.message!,type: TypeMessageAuth.Logout));
-        } else {
-          emit(UserSignedOut());
-        }
-      } catch (e) {
-        print(e); 
+      final getUser = await userDataSource.logout(token: pref.getString("token").toString());
+      pref.remove('idClient');
+      pref.remove('idUser');
+      pref.remove('email');
+      pref.remove('token');
+      if (getUser.message != null) {
+        EasyLoading.showSuccess(getUser.message!,
+              duration: const Duration(milliseconds: 3000), dismissOnTap: true);
+        emit(UserSignedOut(message: getUser.message!, type: TypeMessageAuth.Logout));
+      } else {
+        emit(UserSignedOut());
       }
-
     });
-    on<CheckSignInStatus>((event, emit)async{
+    on<CheckSignInStatus>((event, emit) async {
       SharedPreferences pref = await SharedPreferences.getInstance();
       String? email = pref.getString("email");
       String? token = pref.getString("token");
-      print(token);
 
-      if(email != null && token != null){
-        final getUser = await userDataSource.getUser(token:token);
+      if (email != null && token != null) {
+        final getUser = await userDataSource.getUser(token: token);
 
-        if(getUser.token != null){
-          emit(UserSignedIn(user:getUser));  
-        }else{
-          emit(UserSignedOut(message: "Authentication session are over!!")); 
+        if (getUser.token != null) {
+          emit(UserSignedIn(user: getUser));
+        } else {
+          add(SignOut());
+          EasyLoading.showSuccess("Authentication session are over!!",
+              duration: const Duration(milliseconds: 3000), dismissOnTap: true);
+          emit(UserSignedOut());
         }
-      }else{
-        emit(UserSignedOut()); 
+      } else {
+        emit(UserSignedOut());
       }
     });
   }

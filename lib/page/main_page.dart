@@ -135,11 +135,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     });
   }
 
-  // @override
-  // void dispose() {
-  //   // _timer!.cancel();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    _timer!.cancel();
+    
+    BlocProvider.of<SocketCubit>(context).close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

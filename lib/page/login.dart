@@ -29,7 +29,6 @@ class _LoginState extends State<Login> {
   TextEditingController passwordController = TextEditingController();
   bool invisible = true;
   final bool _isVisible = true;
-  bool showError = false;
   bool ignorePointer = false;
 
   // Carousel Variable
@@ -50,18 +49,6 @@ class _LoginState extends State<Login> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    var state = context.read<UserBloc>().state;
-    
-    // checkUser(state);
-    if (state is UserSignedOut && state.type == TypeMessageAuth.Logout) {
-      EasyLoading.showSuccess(state.message,
-          duration: const Duration(milliseconds: 3000), dismissOnTap: true);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -79,12 +66,6 @@ class _LoginState extends State<Login> {
       ),
       body: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
-          if (state is UserSignedOut && state.type == TypeMessageAuth.Error && showError) {
-            EasyLoading.showError(state.message,
-                duration: const Duration(milliseconds: 3000), dismissOnTap: true);
-            showError = false;
-          }
-
           return Row(
             children: [
               width <= 540
@@ -293,8 +274,10 @@ class _LoginState extends State<Login> {
                                     setState(() {
                                       ignorePointer = true;
                                       Timer(const Duration(seconds: 3), () {
-                                        ignorePointer = false;
-                                        showError = true;
+                                        setState((){
+                                          ignorePointer = false;
+                                          print(ignorePointer);
+                                        });
                                       });
                                     });
                                     await EasyLoading.show(

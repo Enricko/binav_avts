@@ -18,5 +18,3 @@ final class UserSignedIn extends UserState {
 
   List<Object> get props => [user];
 }
-final class UserError extends UserState{
-}
