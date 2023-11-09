@@ -39,13 +39,18 @@ class _LoginState extends State<Login> {
     const IntroScreen(
         title: "Identifikasi Kapal",
         description:
-            "Kemudahan dalam mengakses informasi terkait Identitas Kapal seperti lokasi, arah, dan status Kapal.",
+            "Kemudahan dalam mengakses informasi terkait Identitas dan Lokasi Kapal.",
         assets: "assets/intro1.jpg"),
     const IntroScreen(
         title: "Pelacakan Real Time",
         description:
-            "Efisiensi dalam mengetahui lokasi kapal secara Real Time pada peta.",
+            "Efisiensi dalam mengetahui Koordinat kapal secara Real Time pada peta.",
         assets: "assets/intro2.jpg"),
+    const IntroScreen(
+        title: "Optimalisasi",
+        description:
+        "Pengoptimalan Rute dan operasi Kapal dengan data yang akurat tentang pergerakan kapal.",
+        assets: "assets/intro3.jpg"),
   ];
 
   @override
@@ -138,6 +143,9 @@ class _LoginState extends State<Login> {
                                 Visibility(
                                   visible: _isVisible,
                                   child: TextFormField(
+                                    autofillHints: [
+                                      AutofillHints.email
+                                    ],
                                     keyboardType: TextInputType.text,
                                     controller: emailController,
                                     textInputAction: TextInputAction.next,
@@ -188,6 +196,7 @@ class _LoginState extends State<Login> {
                                   height: 20,
                                 ),
                                 TextFormField(
+
                                   keyboardType: TextInputType.text,
                                   controller: passwordController,
                                   textInputAction: TextInputAction.next,
