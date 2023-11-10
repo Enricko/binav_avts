@@ -47,6 +47,31 @@ class UserDataService {
     }
   }
 
+  Future<UserResponse> changePassword({required String token, required Map<String, dynamic> data}) async {
+    try {
+      dio.options.headers['Authorization'] = "Bearer $token";
+      dio.options.headers['Accept'] = "application/json";
+      // final response = await dio.post("/api/changePassword");
+      var formData = FormData.fromMap({
+        "old_password": data['old_password'],
+        "new_password": data['new_password'],
+        "password_confirmation": data['password_confirmation']
+      });
+      final response = await dio.post("/api/change", data: formData);
+      return UserResponse.fromJson(response.data);
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          print(token);
+          return UserResponse.fromJson(e.response!.data);
+        } else {
+          return throw ('Error message: ${e.message}');
+        }
+      }
+      return throw Exception();
+    }
+  }
+
   Future<UserResponse> logout({required String token}) async {
     try {
       dio.options.headers['Authorization'] = "Bearer $token";
