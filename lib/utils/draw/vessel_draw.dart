@@ -60,18 +60,20 @@ class _VesselDrawerState extends State<VesselDrawer> {
   Widget build(BuildContext context) {
     return load == true
         ? const CircularProgressIndicator()
-        : Container(
-            width: 300,
-            height: 300,
-            padding: EdgeInsets.only(top: 75),
-            child: CustomPaint(
-              size: const Size(200, 200),
-              painter: VesselPainter(
-                  length, width, lengthBowToBreakM, bowLineColor),
-              child: Container(
+        : Center(
+          child: Container(
+              width: 250,
+              height: 250,
+              padding: EdgeInsets.only(top: 75),
+              child: CustomPaint(
+                size: const Size(100, 100),
+                painter: VesselPainter(
+                    length, MediaQuery.of(context).size.width, lengthBowToBreakM, bowLineColor),
+                child: Container(
+                ),
               ),
             ),
-          );
+        );
   }
 }
 
@@ -95,7 +97,7 @@ class VesselPainter extends CustomPainter {
     final path = Path();
 
     // Define the dimensions of the boat's hull (rectangle)
-    final scale = 30;
+    final scale = 25;
 
     final lengthBow = (lengthBowToBreakM / length) * 10;
     final lengthBowToBreak = (length - lengthBowToBreakM);
@@ -188,7 +190,7 @@ class VesselPainter extends CustomPainter {
     canvas.drawPath(path, paint);
 
     // Draw grid lines for width and length
-    final gridSpacing = 10; // Adjust the spacing as needed
+    final gridSpacing = 7.8; // Adjust the spacing as needed
     final numWidthLines = ((hullHeight * 1.5) / gridSpacing).floor();
     final numLengthLines = ((hullWidth * 1.5) / gridSpacing).floor();
 

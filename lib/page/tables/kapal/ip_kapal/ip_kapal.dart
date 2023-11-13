@@ -305,7 +305,7 @@ class _IpKapalPageState extends State<IpKapalPage> {
                                     DataColumn(label: SizedBox(width: 210, child: Text("IP"))),
                                     DataColumn(label: Text("Port")),
                                     DataColumn(label: Text("Type")),
-                                    DataColumn(label: Text("Delete")),
+                                    DataColumn(label: Text("Action")),
                                   ],
                                   rows: data.data!.map((value) {
                                     return DataRow(cells: [

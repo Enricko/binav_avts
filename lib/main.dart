@@ -93,8 +93,6 @@ class _MyAppState extends State<MyApp> {
       child: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserSignedIn) {
-            // EasyLoading.showSuccess("Welcome Back",
-            //     duration: Duration(milliseconds: 2000), dismissOnTap: true);
             router.goNamed("main_page");
           } else if (state is UserSignedOut) {
             router.goNamed('login');

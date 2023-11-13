@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:binav_avts/bloc/websocket/socket_cubit.dart';
 import 'package:binav_avts/page/tables/kapal/add_form.dart';
+import 'package:binav_avts/page/tables/kapal/detail_kapal.dart';
 import 'package:binav_avts/page/tables/kapal/edit_form.dart';
 import 'package:binav_avts/page/tables/kapal/ip_kapal/ip_kapal.dart';
 import 'package:binav_avts/response/websocket/kapal_response.dart';
@@ -205,8 +206,16 @@ class _KapalTablePageState extends State<KapalTablePage> {
                                             color: Colors.blue,
                                           ),
                                           onPressed: () {
-                                            // showDetailVessel(
-                                            //     data, context, value);
+                                            showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (BuildContext context) {
+                                                  return Dialog(
+                                                    shape: const RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                                                    child: DetailKapal(data: value),
+                                                  );
+                                                });
                                           },
                                         ),
                                       ),
