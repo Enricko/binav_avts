@@ -72,6 +72,23 @@ class UserDataService {
     }
   }
 
+  Future<UserResponse> forgotPassword({required String email}) async {
+    try {
+      dio.options.headers['Accept'] = "application/json";
+      final response = await dio.post("/api/password/email", data: {'email': email,});
+      return UserResponse.fromJson(response.data);
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          return UserResponse.fromJson(e.response!.data);
+        } else {
+          return throw ('Error message: ${e.message}');
+        }
+      }
+      return throw Exception();
+    }
+  }
+
   Future<UserResponse> logout({required String token}) async {
     try {
       dio.options.headers['Authorization'] = "Bearer $token";
