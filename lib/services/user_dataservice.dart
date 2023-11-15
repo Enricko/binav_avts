@@ -89,6 +89,45 @@ class UserDataService {
     }
   }
 
+  Future<UserResponse> checkOtp({required String code}) async {
+    try {
+      dio.options.headers['Accept'] = "application/json";
+      final response = await dio.post("/api/password/code/check", data: {'code': code,});
+      return UserResponse.fromJson(response.data);
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          return UserResponse.fromJson(e.response!.data);
+        } else {
+          return throw ('Error message: ${e.message}');
+        }
+      }
+      return throw Exception();
+    }
+  }
+
+  Future<UserResponse> resetPassword({required Map<String, dynamic> data}) async {
+    try {
+      dio.options.headers['Accept'] = "application/json";
+      var formData = FormData.fromMap({
+        "code": data['code'],
+        "password": data['password'],
+        "password_confirmation": data['password_confirmation']
+      });
+      final response = await dio.post("/api/password/reset", data: formData);
+      return UserResponse.fromJson(response.data);
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          return UserResponse.fromJson(e.response!.data);
+        } else {
+          return throw ('Error message: ${e.message}');
+        }
+      }
+      return throw Exception();
+    }
+  }
+
   Future<UserResponse> logout({required String token}) async {
     try {
       dio.options.headers['Authorization'] = "Bearer $token";

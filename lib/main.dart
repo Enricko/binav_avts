@@ -2,7 +2,7 @@ import 'package:binav_avts/bloc/general/general_cubit.dart';
 import 'package:binav_avts/bloc/user/user_bloc.dart';
 import 'package:binav_avts/bloc/websocket/socket_cubit.dart';
 import 'package:binav_avts/services/user_dataservice.dart';
-import 'package:binav_avts/page/login.dart';
+import 'package:binav_avts/page/first_screen.dart';
 import 'package:binav_avts/page/main_page.dart';
 import 'package:binav_avts/page/screen/splash.dart';
 import 'package:flutter/gestures.dart';
@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
           path: 'login',
           name: 'login',
           builder: (context, state) {
-            return Login();
+            return FirstScreen();
           },
         ),
         GoRoute(

@@ -85,6 +85,7 @@ flutter:
     - assets/xml_icon2.png
     - assets/lottie/mail.json
     - assets/lottie/animation_delete.json
+    - assets/lottie/animation_success.json
     - assets/logo.png
     - assets/intro1.jpg
     - assets/intro2.jpg
