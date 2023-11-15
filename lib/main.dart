@@ -1,3 +1,4 @@
+import 'package:binav_avts/bloc/auth_widget/auth_widget_bloc.dart';
 import 'package:binav_avts/bloc/general/general_cubit.dart';
 import 'package:binav_avts/bloc/user/user_bloc.dart';
 import 'package:binav_avts/bloc/websocket/socket_cubit.dart';
@@ -89,6 +90,7 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(create: (BuildContext context) => SocketCubit()..listen()),
         BlocProvider(create: (BuildContext context) => GeneralCubit()),
+        BlocProvider(create: (BuildContext context) => AuthWidgetBloc()),
       ],
       child: BlocListener<UserBloc, UserState>(
         listener: (context, state) {

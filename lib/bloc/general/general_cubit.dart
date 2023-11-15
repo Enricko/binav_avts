@@ -26,11 +26,6 @@ class GeneralCubit extends Cubit<GeneralState> {
     }
   }
 
-  // bool _isForgotPassword = true;
-  // bool? get isForgotPassword => _isForgotPassword;
-
-
-
   Widget _forgotPasswordContent = LoginPage();
   Widget get forgotPasswordContent =>  _forgotPasswordContent;
 

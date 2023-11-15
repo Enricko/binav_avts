@@ -1,3 +1,4 @@
+import 'package:binav_avts/bloc/auth_widget/auth_widget_bloc.dart';
 import 'package:binav_avts/page/screen/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,14 +7,14 @@ import 'package:lottie/lottie.dart';
 
 import '../../../bloc/general/general_cubit.dart';
 
-class ResetSuccess extends StatefulWidget {
-  const ResetSuccess({Key? key}) : super(key: key);
+class ResetSuccessScreen extends StatefulWidget {
+  const ResetSuccessScreen({Key? key}) : super(key: key);
 
   @override
-  State<ResetSuccess> createState() => _ResetSuccessState();
+  State<ResetSuccessScreen> createState() => _ResetSuccessScreenState();
 }
 
-class _ResetSuccessState extends State<ResetSuccess> {
+class _ResetSuccessScreenState extends State<ResetSuccessScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -51,8 +52,7 @@ class _ResetSuccessState extends State<ResetSuccess> {
               ),
             ),
             onPressed: () async {
-              BlocProvider.of<GeneralCubit>(context)
-                  .changeContent = LoginPage();
+              context.read<AuthWidgetBloc>().add(Login());
             },
             child: Text(
               "Back to Login",

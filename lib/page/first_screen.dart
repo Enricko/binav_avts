@@ -1,7 +1,13 @@
 import 'dart:async';
 
+import 'package:binav_avts/bloc/auth_widget/auth_widget_bloc.dart';
 import 'package:binav_avts/bloc/user/user_bloc.dart';
 import 'package:binav_avts/page/profile_page.dart';
+import 'package:binav_avts/page/screen/forgot_password/create_new_password.dart';
+import 'package:binav_avts/page/screen/forgot_password/reset_success.dart';
+import 'package:binav_avts/page/screen/forgot_password/send_email_confirmation.dart';
+import 'package:binav_avts/page/screen/forgot_password/send_otp.dart';
+import 'package:binav_avts/page/screen/login_page.dart';
 import 'package:binav_avts/services/user_dataservice.dart';
 import 'package:binav_avts/page/screen/intro_screen.dart';
 import 'package:flutter/material.dart';
@@ -27,14 +33,8 @@ class FirstScreen extends StatefulWidget {
 }
 
 class _FirstScreenState extends State<FirstScreen> {
-
-
   // Login Form Controller Variable
   TextEditingController otpController = TextEditingController();
-
-
-
-
 
   bool isForgotPassword = true;
   bool sendEmailPage = true;
@@ -43,22 +43,17 @@ class _FirstScreenState extends State<FirstScreen> {
   final List<Widget> introPages = [
     const IntroScreen(
         title: "Identifikasi Kapal",
-        description:
-            "Kemudahan dalam mengakses informasi terkait Identitas dan Lokasi Kapal.",
+        description: "Kemudahan dalam mengakses informasi terkait Identitas dan Lokasi Kapal.",
         assets: "assets/intro1.jpg"),
     const IntroScreen(
         title: "Pelacakan Real Time",
-        description:
-            "Efisiensi dalam mengetahui Koordinat kapal secara Real Time pada peta.",
+        description: "Efisiensi dalam mengetahui Koordinat kapal secara Real Time pada peta.",
         assets: "assets/intro2.jpg"),
     const IntroScreen(
         title: "Optimalisasi",
-        description:
-            "Pengoptimalan Rute dan operasi Kapal dengan data yang akurat tentang pergerakan kapal.",
+        description: "Pengoptimalan Rute dan operasi Kapal dengan data yang akurat tentang pergerakan kapal.",
         assets: "assets/intro3.jpg"),
   ];
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -77,51 +72,66 @@ class _FirstScreenState extends State<FirstScreen> {
         ),
       ),
       body: Row(
-            children: [
-              width <= 540
-                  ? Container()
-                  : SizedBox(
-                      // color: Color(0xFF2B3B9A),
-                      width: width / 2,
-                      height: double.infinity,
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: CarouselSlider(
-                                options: CarouselOptions(
-                                  height: double.infinity,
-                                  autoPlay: true,
-                                  viewportFraction: 1.0,
-                                  autoPlayAnimationDuration:
-                                      const Duration(milliseconds: 3000),
-                                  // viewportFraction: 0.8,
-                                  onPageChanged: (index, reason) {
-                                    setState(() {
-                                      currentIndex = index;
-                                    });
-                                  },
-                                ),
-                                items: introPages),
-                          ),
-                          DotsIndicator(
-                            dotsCount: introPages.length,
-                            position: currentIndex,
-                            decorator: const DotsDecorator(
-                              color: Colors.grey,
-                              activeColor: Colors.blue,
+        children: [
+          width <= 540
+              ? Container()
+              : SizedBox(
+                  // color: Color(0xFF2B3B9A),
+                  width: width / 2,
+                  height: double.infinity,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: CarouselSlider(
+                            options: CarouselOptions(
+                              height: double.infinity,
+                              autoPlay: true,
+                              viewportFraction: 1.0,
+                              autoPlayAnimationDuration: const Duration(milliseconds: 3000),
+                              // viewportFraction: 0.8,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  currentIndex = index;
+                                });
+                              },
                             ),
-                          ),
-                        ],
+                            items: introPages),
                       ),
-                    ),
-              SingleChildScrollView(
-                  child : Container(
-                          width: width <= 540 ? width : width / 2,
-                          padding: const EdgeInsets.all(30),
-                          child: BlocProvider.of<GeneralCubit>(context).forgotPasswordContent
-                        )),
-            ],
-          )
+                      DotsIndicator(
+                        dotsCount: introPages.length,
+                        position: currentIndex,
+                        decorator: const DotsDecorator(
+                          color: Colors.grey,
+                          activeColor: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+          SingleChildScrollView(
+            child: Container(
+              width: width <= 540 ? width : width / 2,
+              padding: const EdgeInsets.all(30),
+              child: BlocBuilder(
+                bloc: BlocProvider.of<AuthWidgetBloc>(context),
+                builder: (context, state) {
+
+                  if (state is AuthEmailConfirm) {
+                    return SendEmailConfirm();
+                  }else if(state is AuthOtpConfirm){
+                    return SendOtp();
+                  }else if(state is AuthResetPassword){
+                    return CreateNewPassword();
+                  }else if(state is AuthResetSuccess){
+                    return ResetSuccessScreen();
+                  }
+                  return LoginPage();
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
   //
@@ -354,5 +364,3 @@ class _FirstScreenState extends State<FirstScreen> {
   //   );
   // }
 }
-
-

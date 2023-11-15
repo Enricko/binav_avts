@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:binav_avts/bloc/auth_widget/auth_widget_bloc.dart';
 import 'package:binav_avts/page/screen/forgot_password/send_otp.dart';
 import 'package:binav_avts/page/screen/login_page.dart';
 import 'package:flutter/material.dart';
@@ -21,16 +22,23 @@ class _SendEmailConfirmState extends State<SendEmailConfirm> {
   TextEditingController emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool ignorePointer = false;
+  
+  @override
+  void dispose() {
+    super.dispose();
+    emailController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-            onTap: (){
-              BlocProvider.of<GeneralCubit>(context).changeContent = LoginPage();
+        InkWell(
+            onTap: () {
+              context.read<AuthWidgetBloc>().add(Login());
             },
-            child: Icon( Icons.arrow_back)),
+            child: Icon(Icons.arrow_back)),
         SizedBox(
           height: 15,
         ),
@@ -71,9 +79,7 @@ class _SendEmailConfirmState extends State<SendEmailConfirm> {
                       if (value == null || value.isEmpty || value == "") {
                         return "The Email field is required.";
                       }
-                      if (!RegExp(
-                          r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                          .hasMatch(value)) {
+                      if (!RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(value)) {
                         return 'Please enter a valid email';
                       }
                       return null;
@@ -83,18 +89,12 @@ class _SendEmailConfirmState extends State<SendEmailConfirm> {
                       hintText: "Email",
                       prefixIcon: const Icon(Icons.email),
                       focusedBorder: const OutlineInputBorder(
-                        borderSide:
-                        BorderSide(width: 1, color: Colors.blueAccent),
+                        borderSide: BorderSide(width: 1, color: Colors.blueAccent),
                       ),
-                      enabledBorder: const OutlineInputBorder(
-                          borderSide:
-                          BorderSide(width: 1, color: Colors.black38)),
-                      errorBorder: const OutlineInputBorder(
-                          borderSide:
-                          BorderSide(width: 1, color: Colors.redAccent)),
-                      focusedErrorBorder: const OutlineInputBorder(
-                          borderSide:
-                          BorderSide(width: 1, color: Colors.redAccent)),
+                      enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.black38)),
+                      errorBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                      focusedErrorBorder:
+                          const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
                       filled: true,
                       fillColor: const Color(0x0f2f2f2f),
                     ),
@@ -113,8 +113,7 @@ class _SendEmailConfirmState extends State<SendEmailConfirm> {
                 height: 40,
                 child: ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor:
-                    MaterialStateProperty.all(const Color(0xFF133BAD)),
+                    backgroundColor: MaterialStateProperty.all(const Color(0xFF133BAD)),
                     shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
@@ -131,25 +130,9 @@ class _SendEmailConfirmState extends State<SendEmailConfirm> {
                             ignorePointer = false;
                           });
                         });
-                      });
-                      EasyLoading.show(status: "Loading...");
-                      UserDataService()
-                          .forgotPassword(email: emailController.text
-                          )
-                          .then((value) {
-                        if (value.message == "We have emailed your password reset link.") {
-                          // EasyLoading.showSuccess(value.message!,
-                          //     duration: const Duration(seconds: 3), dismissOnTap: true);
-                          BlocProvider.of<GeneralCubit>(context).changeContent = SendOtp(email: emailController.text,);
-                        } else {
-                          EasyLoading.showError(value.message!,
-                              duration: const Duration(seconds: 3), dismissOnTap: true);
-                        }
-                      }).whenComplete(() {
-                        EasyLoading.dismiss();
+                        context.read<AuthWidgetBloc>().add(OtpConfirm(email: emailController.text));
                       });
                     }
-
                   },
                   child: const Text(
                     "Send Code",
