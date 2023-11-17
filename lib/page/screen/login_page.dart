@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:binav_avts/bloc/auth_widget/auth_widget_bloc.dart';
+import 'package:binav_avts/bloc/utils/utils_bloc.dart';
 import 'package:binav_avts/page/screen/forgot_password/send_email_confirmation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../bloc/general/general_cubit.dart';
 import '../../bloc/user/user_bloc.dart';
@@ -29,6 +31,19 @@ class _LoginPageState extends State<LoginPage> {
   bool ignorePointer = false;
 
   @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  void getData() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String savedValue = pref.getString('rememberMe') ?? '';
+    emailController.text = savedValue;
+      CheckboxState.checked;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<UserBloc, UserState>(builder: (context, state) {
       return Column(
@@ -43,8 +58,8 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Text(
             "${widget.idClient}"
-            "Hai Welcome to Binav AVTS\n"
-            "Log in to your Account",
+                "Hai Welcome to Binav AVTS\n"
+                "Log in to your Account",
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
           ),
           Container(
@@ -68,7 +83,9 @@ class _LoginPageState extends State<LoginPage> {
                           if (value == null || value.isEmpty || value == "") {
                             return "The Email field is required.";
                           }
-                          if (!RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(value)) {
+                          if (!RegExp(
+                              r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+                              .hasMatch(value)) {
                             return 'Please enter a valid email';
                           }
                           return null;
@@ -79,12 +96,18 @@ class _LoginPageState extends State<LoginPage> {
                           prefixIcon: Icon(Icons.email_outlined),
                           // hintStyle: Constants.hintStyle,
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(width: 1, color: Colors.blueAccent),
+                            borderSide: BorderSide(
+                                width: 1, color: Colors.blueAccent),
                           ),
-                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.black38)),
-                          errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  width: 1, color: Colors.black38)),
+                          errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  width: 1, color: Colors.redAccent)),
                           focusedErrorBorder:
-                              OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                          OutlineInputBorder(borderSide: BorderSide(
+                              width: 1, color: Colors.redAccent)),
                           filled: true,
                           fillColor: Color(0x0f2f2f2f),
                         ),
@@ -109,7 +132,9 @@ class _LoginPageState extends State<LoginPage> {
                         hintText: "Password",
                         prefixIcon: const Icon(Icons.key),
                         suffixIcon: IconButton(
-                          icon: Icon((invisible == true) ? Icons.visibility_outlined : Icons.visibility_off),
+                          icon: Icon((invisible == true)
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off),
                           onPressed: () {
                             setState(() {
                               invisible = !invisible;
@@ -118,14 +143,18 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         // hintStyle: Constants.hintStyle,
                         focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: Colors.blueAccent),
+                          borderSide: BorderSide(
+                              width: 1, color: Colors.blueAccent),
                         ),
                         enabledBorder:
-                            const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.black38)),
+                        const OutlineInputBorder(borderSide: BorderSide(
+                            width: 1, color: Colors.black38)),
                         errorBorder:
-                            const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                        const OutlineInputBorder(borderSide: BorderSide(
+                            width: 1, color: Colors.redAccent)),
                         focusedErrorBorder:
-                            const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                        const OutlineInputBorder(borderSide: BorderSide(
+                            width: 1, color: Colors.redAccent)),
                         filled: true,
                         fillColor: const Color(0x0f2f2f2f),
                       ),
@@ -138,14 +167,22 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Row(
                 children: [
-                  Checkbox(value: false, onChanged: (bool? value) {}),
+                  BlocBuilder<UtilsBloc, CheckboxState>(
+                    builder: (context,state) {
+
+                      return Checkbox(value: state == CheckboxState.checked,
+                          onChanged: (bool? value) {
+                            BlocProvider.of<UtilsBloc>(context).toggleCheckbox();
+                          });
+                    }
+                  ),
                   SizedBox(
                     width: 10,
                   ),
                   Expanded(child: Text("Remember me")),
                   TextButton(
                     onPressed: () {
-                        context.read<AuthWidgetBloc>().add(EmailConfirm());
+                      context.read<AuthWidgetBloc>().add(EmailConfirm());
                     },
                     child: Text(
                       "Forgot Password",
@@ -158,7 +195,9 @@ class _LoginPageState extends State<LoginPage> {
                 height: 10,
               ),
               Text(
-                state is UserSignedOut && state.type == TypeMessageAuth.Error ? state.message : "",
+                state is UserSignedOut && state.type == TypeMessageAuth.Error
+                    ? state.message
+                    : "",
                 style: const TextStyle(color: Colors.redAccent),
               ),
               const SizedBox(
@@ -172,7 +211,8 @@ class _LoginPageState extends State<LoginPage> {
                   height: 40,
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(const Color(0xFF133BAD)),
+                      backgroundColor: MaterialStateProperty.all(const Color(
+                          0xFF133BAD)),
                       shape: MaterialStateProperty.all(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
@@ -194,7 +234,8 @@ class _LoginPageState extends State<LoginPage> {
                         await EasyLoading.show(status: "Loading...");
                         context
                             .read<UserBloc>()
-                            .add(SignIn(email: emailController.text, password: passwordController.text));
+                            .add(SignIn(email: emailController.text,
+                            password: passwordController.text));
                       }
                     },
                     child: const Text(

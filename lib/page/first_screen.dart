@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:binav_avts/bloc/auth_widget/auth_widget_bloc.dart';
 import 'package:binav_avts/bloc/user/user_bloc.dart';
-import 'package:binav_avts/page/profile_page.dart';
+import 'package:binav_avts/page/first_profile.dart';
 import 'package:binav_avts/page/screen/forgot_password/create_new_password.dart';
 import 'package:binav_avts/page/screen/forgot_password/reset_success.dart';
 import 'package:binav_avts/page/screen/forgot_password/send_email_confirmation.dart';

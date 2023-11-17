@@ -13,6 +13,9 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
+import 'bloc/profile_widget/profile_widget_bloc.dart';
+import 'bloc/utils/utils_bloc.dart';
+
 void configLoading() {
   EasyLoading.instance
     ..displayDuration = const Duration(milliseconds: 2000)
@@ -91,6 +94,8 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (BuildContext context) => SocketCubit()..listen()),
         BlocProvider(create: (BuildContext context) => GeneralCubit()),
         BlocProvider(create: (BuildContext context) => AuthWidgetBloc()),
+        BlocProvider(create: (BuildContext context) => UtilsBloc()),
+        BlocProvider(create: (BuildContext context) => ProfileWidgetBloc()),
       ],
       child: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
