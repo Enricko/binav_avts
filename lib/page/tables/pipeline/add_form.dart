@@ -30,6 +30,7 @@ class _AddPipelineState extends State<AddPipeline> {
   bool isSwitched = false;
   bool ignorePointer = false;
   Timer? _timer;
+  Timer? ignorePointerTimer;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -72,6 +73,7 @@ class _AddPipelineState extends State<AddPipeline> {
     clientController.dispose();
     filePickerController.dispose();
     _timer!.cancel();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
     super.dispose();
   }
 
@@ -282,8 +284,10 @@ class _AddPipelineState extends State<AddPipeline> {
                                 // Prevent Multiple Clicked
                                 setState(() {
                                   ignorePointer = true;
-                                  Timer(const Duration(seconds: 3), () {
-                                    ignorePointer = false;
+                                  ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                    setState(() {
+                                      ignorePointer = false;
+                                    });
                                   });
                                 });
                                 EasyLoading.show(status: "Loading...");

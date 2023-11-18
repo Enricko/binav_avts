@@ -12,7 +12,10 @@ enum TypeMessageAuth {
 
 class IpKapalDataService {
   // final dio = Dio(BaseOptions(baseUrl: "http://127.0.0.1:8000"));
-  final dio = Dio(BaseOptions(baseUrl: "https://api.binav-avts.id"));
+  final dio = Dio(BaseOptions(baseUrl: "https://api.binav-avts.id", headers: {
+    'Accept': "application/json",
+  }));
+  
   Future<SendResponse> addIpKapal({
     required String callSign,
     required String ip,
@@ -20,9 +23,6 @@ class IpKapalDataService {
     required String type,
   }) async {
     try {
-      // dio.options.headers['Authorization'] = "Bearer $token";
-      // dio.options.headers['Content-Type'] = 'multipart/form-data';
-      // dio.options.contentType = 'multipart/form-data';
       var formData = FormData.fromMap({
         'call_sign': callSign,
         'ip': ip,

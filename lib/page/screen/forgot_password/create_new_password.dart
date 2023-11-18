@@ -18,6 +18,7 @@ class CreateNewPassword extends StatefulWidget {
 
 class _CreateNewPasswordState extends State<CreateNewPassword> {
   final _formKey = GlobalKey<FormState>();
+  Timer? ignorePointerTimer;
   bool ignorePointer = false;
 
   TextEditingController passwordController = TextEditingController();
@@ -25,6 +26,12 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
 
   bool invisible = true;
   bool invisibleConfirm = true;
+
+  @override
+  void dispose() {
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +168,7 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
                         if (_formKey.currentState!.validate()) {
                           setState(() {
                             ignorePointer = true;
-                            Timer(const Duration(seconds: 3), () {
+                            ignorePointerTimer = Timer(const Duration(seconds: 3), () {
                               setState(() {
                                 ignorePointer = false;
                               });

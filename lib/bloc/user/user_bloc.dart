@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:binav_avts/services/user_dataservice.dart';
 import 'package:binav_avts/response/user_response.dart';
 import 'package:bloc/bloc.dart';
@@ -22,6 +24,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           }
           pref.setString('idUser', getUser.user!.idUser!);
           pref.setString('email', event.email);
+          pref.setString('level', getUser.user!.level!);
           pref.setString('token', getUser.token!);
 
           emit(UserSignedIn(user: getUser));
@@ -38,6 +41,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       pref.remove('idClient');
       pref.remove('idUser');
       pref.remove('email');
+      pref.remove('level');
       pref.remove('token');
       if (getUser.message != null) {
         EasyLoading.showSuccess(getUser.message!,

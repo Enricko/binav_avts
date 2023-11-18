@@ -13,7 +13,10 @@ enum TypeMessageAuth {
 
 class KapalDataService {
   // final dio = Dio(BaseOptions(baseUrl: "http://127.0.0.1:8000"));
-  final dio = Dio(BaseOptions(baseUrl: "https://api.binav-avts.id"));
+  final dio = Dio(BaseOptions(baseUrl: "https://api.binav-avts.id", headers: {
+    'Accept': "application/json",
+  }));
+
   Future<SendResponse> addKapal({
     required Uint8List file,
     required String fileName,
@@ -21,9 +24,6 @@ class KapalDataService {
     required Map<String, dynamic> data,
   }) async {
     try {
-      // dio.options.headers['Authorization'] = "Bearer $token";
-      // dio.options.headers['Content-Type'] = 'multipart/form-data';
-      // dio.options.contentType = 'multipart/form-data';
       var formData = FormData.fromMap({
         "id_client": data['id_client'],
         "call_sign": data['call_sign'],
@@ -60,9 +60,6 @@ class KapalDataService {
     required Map<String, dynamic> data,
   }) async {
     try {
-      // dio.options.headers['Authorization'] = "Bearer $token";
-      // dio.options.headers['Content-Type'] = 'multipart/form-data';
-      // dio.options.contentType = 'multipart/form-data';
       var formData = FormData.fromMap({
         "old_call_sign": data['old_call_sign'],
         "call_sign": data['call_sign'],
@@ -97,9 +94,6 @@ class KapalDataService {
     required Map<String, dynamic> data,
   }) async {
     try {
-      // dio.options.headers['Authorization'] = "Bearer $token";
-      // dio.options.headers['Content-Type'] = 'multipart/form-data';
-      // dio.options.contentType = 'multipart/form-data';
       var formData = FormData.fromMap({
         "old_call_sign": data['old_call_sign'],
         "call_sign": data['call_sign'],
@@ -127,15 +121,13 @@ class KapalDataService {
       return throw Exception();
     }
   }
-  Future<SendResponse> deleteKapal(
-      {required String token, required String call_sign}) async {
+
+  Future<SendResponse> deleteKapal({required String token, required String call_sign}) async {
     try {
       dio.options.headers['Authorization'] = "Bearer $token";
-      final response = await dio.post("/api/delete_kapal/$call_sign",
-          onSendProgress: (int sent, int total) {
+      final response = await dio.post("/api/delete_kapal/$call_sign", onSendProgress: (int sent, int total) {
         EasyLoading.showProgress(sent / total,
-            status:
-                "${((sent / total) * 100).toStringAsFixed(2)}%\nSending data...");
+            status: "${((sent / total) * 100).toStringAsFixed(2)}%\nSending data...");
       });
       return SendResponse.fromJson(response.data);
     } catch (e) {

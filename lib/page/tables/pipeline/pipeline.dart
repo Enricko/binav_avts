@@ -27,6 +27,7 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
   int? totalPage;
 
   Timer? _timer;
+  Timer? ignorePointerTimer;
   bool isSwitched = false;
   bool load = false;
   bool ignorePointer = false;
@@ -53,6 +54,7 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
   @override
   void dispose() {
     _timer!.cancel();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
     super.dispose();
   }
 
@@ -201,8 +203,10 @@ class _PipelineTablePageState extends State<PipelineTablePage> {
                                                   if (!ignorePointer) {
                                                     setState(() {
                                                       ignorePointer = true;
-                                                      Timer(const Duration(seconds: 3), () {
-                                                        ignorePointer = false;
+                                                      ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                                        setState(() {
+                                                          ignorePointer = false;
+                                                        });
                                                       });
                                                     });
                                                     EasyLoading.show(status: "Loading...");

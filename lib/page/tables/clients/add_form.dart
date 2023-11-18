@@ -21,6 +21,7 @@ class _AddClientState extends State<AddClient> {
 
   bool isSwitched = false;
   bool ignorePointer = false;
+  Timer? ignorePointerTimer;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -29,6 +30,7 @@ class _AddClientState extends State<AddClient> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
     super.dispose();
   }
 
@@ -51,8 +53,7 @@ class _AddClientState extends State<AddClient> {
                 children: [
                   Text(
                     " Add Client",
-                    style: GoogleFonts.openSans(
-                        fontSize: 15, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.openSans(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
                     onPressed: () {
@@ -81,9 +82,7 @@ class _AddClientState extends State<AddClient> {
                             hint: 'Name',
                             type: TextInputType.text,
                             validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  value == "") {
+                              if (value == null || value.isEmpty || value == "") {
                                 return "The Name field is required.";
                               }
                               return null;
@@ -94,14 +93,10 @@ class _AddClientState extends State<AddClient> {
                             hint: 'Email',
                             type: TextInputType.text,
                             validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  value == "") {
+                              if (value == null || value.isEmpty || value == "") {
                                 return "The Email field is required.";
                               }
-                              if (!RegExp(
-                                      r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                                  .hasMatch(value)) {
+                              if (!RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(value)) {
                                 return 'Please enter a valid email';
                               }
                               return null;
@@ -112,12 +107,9 @@ class _AddClientState extends State<AddClient> {
                             hint: 'Password',
                             type: TextInputType.text,
                             validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  value == "") {
+                              if (value == null || value.isEmpty || value == "") {
                                 return "The Password field is required.";
-                              } else if (passwordController.text !=
-                                  confirmPasswordController.text) {
+                              } else if (passwordController.text != confirmPasswordController.text) {
                                 return "Password & Confirmation Password not match.";
                               }
                               return null;
@@ -128,12 +120,9 @@ class _AddClientState extends State<AddClient> {
                             hint: 'Confirm Password',
                             type: TextInputType.text,
                             validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  value == "") {
+                              if (value == null || value.isEmpty || value == "") {
                                 return "The Confirm Password field is required.";
-                              } else if (passwordController.text !=
-                                  confirmPasswordController.text) {
+                              } else if (passwordController.text != confirmPasswordController.text) {
                                 return "Password & Confirmation Password not match.";
                               }
                               return null;
@@ -147,8 +136,7 @@ class _AddClientState extends State<AddClient> {
                     ),
                     const Text(
                       "Status",
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(
                       height: 40,
@@ -176,8 +164,7 @@ class _AddClientState extends State<AddClient> {
                           ignoring: ignorePointer,
                           child: ElevatedButton(
                             style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.blueAccent),
+                              backgroundColor: MaterialStateProperty.all(Colors.blueAccent),
                               shape: MaterialStateProperty.all(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(5),
@@ -188,8 +175,10 @@ class _AddClientState extends State<AddClient> {
                               if (_formKey.currentState!.validate()) {
                                 setState(() {
                                   ignorePointer = true;
-                                  Timer(Duration(seconds: 3), () {
-                                    ignorePointer = false;
+                                  ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                    setState(() {
+                                      ignorePointer = false;
+                                    });
                                   });
                                 });
                                 EasyLoading.show(status: "Loading...");
@@ -198,8 +187,7 @@ class _AddClientState extends State<AddClient> {
                                         client_name: nameController.text,
                                         email: emailController.text,
                                         password: passwordController.text,
-                                        password_confirmation:
-                                            passwordController.text,
+                                        password_confirmation: passwordController.text,
                                         isSwitched: isSwitched)
                                     .then((value) {
                                   if (value.status == 200) {
@@ -207,13 +195,11 @@ class _AddClientState extends State<AddClient> {
                                       isSwitched = false;
                                     });
                                     EasyLoading.showSuccess(value.message!,
-                                        duration: Duration(seconds: 3),
-                                        dismissOnTap: true);
+                                        duration: const Duration(seconds: 3), dismissOnTap: true);
                                     Navigator.pop(context);
                                   } else {
                                     EasyLoading.showError(value.message!,
-                                        duration: Duration(seconds: 3),
-                                        dismissOnTap: true);
+                                        duration: const Duration(seconds: 3), dismissOnTap: true);
                                   }
                                 });
                               }
@@ -231,11 +217,9 @@ class _AddClientState extends State<AddClient> {
                         ),
                         TextButton(
                           style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                      side: const BorderSide(
-                                          color: Colors.blueAccent)))),
+                              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                  side: const BorderSide(color: Colors.blueAccent)))),
                           onPressed: () {
                             setState(() {
                               isSwitched = false;

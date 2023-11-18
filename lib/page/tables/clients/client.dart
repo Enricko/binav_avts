@@ -6,6 +6,7 @@ import 'package:binav_avts/page/tables/clients/edit_form.dart';
 import 'package:binav_avts/response/websocket/client_response.dart';
 import 'package:binav_avts/services/client_dataservice.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pagination_flutter/pagination.dart';
 import 'package:binav_avts/utils/alerts.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ClientTablePage extends StatefulWidget {
-  const ClientTablePage({super.key, this.idClient = ""});
-  final String idClient;
+  const ClientTablePage({super.key});
 
   @override
   State<ClientTablePage> createState() => _ClientTablePageState();
@@ -27,6 +27,7 @@ class _ClientTablePageState extends State<ClientTablePage> {
   int? totalPage;
 
   Timer? _timer;
+  Timer? ignorePointerTimer;
   bool isSwitched = false;
   bool ignorePointer = false;
   bool load = false;
@@ -42,9 +43,8 @@ class _ClientTablePageState extends State<ClientTablePage> {
   void initState() {
     _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
       BlocProvider.of<SocketCubit>(context).getClientDataTable(payload: {
-        "id_client": widget.idClient,
-        "page": page,
-        "perpage": perpage
+        // "id_client": widget.idClient,
+        "page": page, "perpage": perpage
       });
       setState(() {
         load = false;
@@ -56,6 +56,9 @@ class _ClientTablePageState extends State<ClientTablePage> {
   @override
   void dispose() {
     _timer!.cancel();
+    if (ignorePointerTimer != null) {
+      ignorePointerTimer!.cancel();
+    }
     super.dispose();
   }
 
@@ -76,8 +79,7 @@ class _ClientTablePageState extends State<ClientTablePage> {
               children: [
                 Text(
                   "Client List",
-                  style: GoogleFonts.openSans(
-                      fontSize: 20, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.openSans(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   onPressed: () {
@@ -93,8 +95,7 @@ class _ClientTablePageState extends State<ClientTablePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                    "Page $page of ${totalPage == null ? "?" : (totalPage! / perpage).ceil()}"),
+                Text("Page $page of ${totalPage == null ? "?" : (totalPage! / perpage).ceil()}"),
                 Row(
                   children: [
                     const SizedBox(
@@ -105,10 +106,8 @@ class _ClientTablePageState extends State<ClientTablePage> {
                       child: ElevatedButton(
                           style: ButtonStyle(
                               shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5))),
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.blueAccent)),
+                                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
+                              backgroundColor: MaterialStateProperty.all(Colors.blueAccent)),
                           onPressed: () {
                             ///FUNCTION ADD CLIENT
                             showDialog(
@@ -116,9 +115,7 @@ class _ClientTablePageState extends State<ClientTablePage> {
                                 barrierDismissible: false,
                                 builder: (BuildContext context) {
                                   return const Dialog(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5))),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
                                       child: AddClient());
                                 });
                           },
@@ -137,8 +134,7 @@ class _ClientTablePageState extends State<ClientTablePage> {
 
           // TODO : Might need Expanded Widget
           StreamBuilder<ClientResponse>(
-            stream: BlocProvider.of<SocketCubit>(context)
-                .ClientTableStreamController,
+            stream: BlocProvider.of<SocketCubit>(context).ClientTableStreamController,
             builder: (context, AsyncSnapshot<ClientResponse> snapshot) {
               if (snapshot.hasError) {
                 return const Center(
@@ -160,70 +156,55 @@ class _ClientTablePageState extends State<ClientTablePage> {
                     scrollDirection: Axis.horizontal,
                     child: SingleChildScrollView(
                       child: DataTable(
-                          headingRowColor: MaterialStateProperty.all(
-                              const Color(0xffd3d3d3)),
+                          headingRowColor: MaterialStateProperty.all(const Color(0xffd3d3d3)),
                           columns: const [
                             DataColumn(label: Text("Name")),
                             DataColumn(label: Text("Email")),
                             DataColumn(label: Text("Status")),
                             DataColumn(label: Text("Send Email")),
-                            DataColumn(
-                                label: Text("View Client Only Data")),
+                            DataColumn(label: Text("View Client Only Data")),
                             DataColumn(label: Text("Action")),
                           ],
                           rows: data.data!.map((value) {
                             return DataRow(cells: [
                               DataCell(Text(value.clientName!)),
                               DataCell(Text(value.email!)),
-                              DataCell(Text((value.status! == "1")
-                                  ? "ACTIVE"
-                                  : "INACTIVE")),
+                              DataCell(Text((value.status! == "1") ? "ACTIVE" : "INACTIVE")),
                               DataCell(ElevatedButton(
                                 onPressed: () {
                                   Alerts.showAlertYesNoConfirm(
-                                      title:
-                                          "Are you sure you want to send mail to ${value.email}?",
+                                      title: "Are you sure you want to send mail to ${value.email}?",
                                       onPressYes: () async {
                                         if (!ignorePointer) {
                                           setState(() {
                                             ignorePointer = true;
-                                            Timer(const Duration(seconds: 3), () {
-                                              ignorePointer = false;
+                                            ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                              setState(() {
+                                                ignorePointer = false;
+                                              });
                                             });
                                           });
                                           try {
-                                            EasyLoading.show(
-                                                status: "Loading...");
+                                            EasyLoading.show(status: "Loading...");
 
-                                            SharedPreferences pref =
-                                                await SharedPreferences
-                                                    .getInstance();
+                                            SharedPreferences pref = await SharedPreferences.getInstance();
                                             ClientDataService()
                                                 .sendMailToClient(
-                                                    token: pref
-                                                        .getString("token")!,
-                                                    id_client: value.idClient!)
+                                                    token: pref.getString("token")!, id_client: value.idClient!)
                                                 .then((val) {
                                               if (val.status == 200) {
-                                                EasyLoading.showSuccess(
-                                                    "Successfully sent the mail to ${value.email}!",
-                                                    duration:
-                                                        const Duration(seconds: 3),
-                                                    dismissOnTap: true);
+                                                EasyLoading.showSuccess("Successfully sent the mail to ${value.email}!",
+                                                    duration: const Duration(seconds: 3), dismissOnTap: true);
                                                 Navigator.pop(context);
                                               } else {
-                                                EasyLoading.showError(
-                                                    val.message!,
-                                                    duration:
-                                                        const Duration(seconds: 3),
-                                                    dismissOnTap: true);
+                                                EasyLoading.showError(val.message!,
+                                                    duration: const Duration(seconds: 3), dismissOnTap: true);
                                                 Navigator.pop(context);
                                               }
                                             });
                                           } catch (e) {
                                             EasyLoading.showError(e.toString(),
-                                                duration: const Duration(seconds: 3),
-                                                dismissOnTap: true);
+                                                duration: const Duration(seconds: 3), dismissOnTap: true);
                                           }
                                         }
                                       },
@@ -245,33 +226,45 @@ class _ClientTablePageState extends State<ClientTablePage> {
                               //   activeColor: Colors.green,
                               // )),
                               DataCell(
-                                SizedBox(
-                                  height: 40,
-                                  child: ElevatedButton(
-                                      style: ButtonStyle(
-                                          shape: MaterialStateProperty.all(
-                                              RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          5))),
-                                          backgroundColor:
-                                              MaterialStateProperty.all(
-                                                  Colors.blueAccent)),
-                                      onPressed: () {
-                                        ///FUNCTION VIEW CLIENT ONLY DATA
-                                      },
-                                      child: const Text(
-                                        "View Client",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      )),
+                                IgnorePointer(
+                                  ignoring: ignorePointer,
+                                  child: SizedBox(
+                                    height: 40,
+                                    child: ElevatedButton(
+                                        style: ButtonStyle(
+                                            shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
+                                            backgroundColor: MaterialStateProperty.all(Colors.blueAccent)),
+                                        onPressed: () {
+                                          ///FUNCTION VIEW CLIENT ONLY DATA
+                                          setState(() {
+                                            ignorePointer = true;
+                                            ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                              setState(() {
+                                                ignorePointer = false;
+                                              });
+                                            });
+                                          });
+                                          EasyLoading.show(status: "Loading...");
+                                          context.pop();
+                                          Router.neglect(context, () {
+                                            context.goNamed("main_page_client",
+                                                pathParameters: {'id_client': value.idClient!});
+                                          });
+                                        },
+                                        child: const Text(
+                                          "View Client",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        )),
+                                  ),
                                 ),
                               ),
                               DataCell(Row(
                                 children: [
                                   Tooltip(
-                                    message:"Edit",
+                                    message: "Edit",
                                     child: IconButton(
                                       icon: const Icon(
                                         Icons.edit,
@@ -285,12 +278,8 @@ class _ClientTablePageState extends State<ClientTablePage> {
                                             barrierDismissible: false,
                                             builder: (BuildContext context) {
                                               return Dialog(
-                                                shape:
-                                                    const RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    5))),
+                                                shape: const RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.all(Radius.circular(5))),
                                                 child: EditClient(data: value),
                                               );
                                             });
@@ -306,53 +295,38 @@ class _ClientTablePageState extends State<ClientTablePage> {
                                       ),
                                       onPressed: () {
                                         Alerts.showAlertYesNo(
-                                            title:
-                                                "Are you sure you want to delete this client?",
+                                            title: "Are you sure you want to delete this client?",
                                             onPressYes: () async {
                                               if (!ignorePointer) {
                                                 try {
                                                   setState(() {
                                                     ignorePointer = true;
-                                                    Timer(const Duration(seconds: 3),
-                                                        () {
-                                                      ignorePointer = false;
+                                                    ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                                      setState(() {
+                                                        ignorePointer = false;
+                                                      });
                                                     });
                                                   });
-                                                  EasyLoading.show(
-                                                      status: "Loading...");
-                                  
-                                                  SharedPreferences pref =
-                                                      await SharedPreferences
-                                                          .getInstance();
+                                                  EasyLoading.show(status: "Loading...");
+
+                                                  SharedPreferences pref = await SharedPreferences.getInstance();
                                                   ClientDataService()
                                                       .deleteClient(
-                                                          token: pref.getString(
-                                                              "token")!,
-                                                          id_client:
-                                                              value.idClient!)
+                                                          token: pref.getString("token")!, id_client: value.idClient!)
                                                       .then((value) {
                                                     if (value.status == 200) {
-                                                      EasyLoading.showSuccess(
-                                                          value.message!,
-                                                          duration: const Duration(
-                                                              seconds: 3),
-                                                          dismissOnTap: true);
+                                                      EasyLoading.showSuccess(value.message!,
+                                                          duration: const Duration(seconds: 3), dismissOnTap: true);
                                                       Navigator.pop(context);
                                                     } else {
-                                                      EasyLoading.showError(
-                                                          value.message!,
-                                                          duration: const Duration(
-                                                              seconds: 3),
-                                                          dismissOnTap: true);
+                                                      EasyLoading.showError(value.message!,
+                                                          duration: const Duration(seconds: 3), dismissOnTap: true);
                                                       Navigator.pop(context);
                                                     }
                                                   });
                                                 } catch (e) {
-                                                  EasyLoading.showError(
-                                                      e.toString(),
-                                                      duration:
-                                                          const Duration(seconds: 3),
-                                                      dismissOnTap: true);
+                                                  EasyLoading.showError(e.toString(),
+                                                      duration: const Duration(seconds: 3), dismissOnTap: true);
                                                 }
                                               }
                                             },

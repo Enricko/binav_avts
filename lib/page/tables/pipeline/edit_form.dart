@@ -27,6 +27,7 @@ class _EditPipelineState extends State<EditPipeline> {
   bool isSwitched = false;
   bool ignorePointer = false;
   // Timer? _timer;
+  Timer? ignorePointerTimer;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -72,7 +73,7 @@ class _EditPipelineState extends State<EditPipeline> {
   void dispose() {
     nameController.dispose();
     FilePickerController.dispose();
-    // _timer!.cancel();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
     super.dispose();
   }
 
@@ -138,7 +139,7 @@ class _EditPipelineState extends State<EditPipeline> {
                           Responsive(
                             children: [
                               Div(
-                                divison: Division(
+                                divison: const Division(
                                   colS: 9,
                                   colM: 9,
                                   colL: 9,
@@ -155,7 +156,7 @@ class _EditPipelineState extends State<EditPipeline> {
                                 ),
                               ),
                               Div(
-                                divison: Division(
+                                divison: const Division(
                                   colS: 3,
                                   colM: 3,
                                   colL: 3,
@@ -190,26 +191,26 @@ class _EditPipelineState extends State<EditPipeline> {
                       height: 5,
                     ),
                     Column(
-                              children: [
-                                const Text("Off/On"),
-                                SizedBox(
-                                  height: 40,
-                                  child: FittedBox(
-                                    fit: BoxFit.fill,
-                                    child: Switch(
-                                      value: isSwitched,
-                                      onChanged: (bool value) {
-                                        setState(() {
-                                          isSwitched = value;
-                                        });
-                                      },
-                                      activeTrackColor: Colors.lightGreen,
-                                      activeColor: Colors.green,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                      children: [
+                        const Text("Off/On"),
+                        SizedBox(
+                          height: 40,
+                          child: FittedBox(
+                            fit: BoxFit.fill,
+                            child: Switch(
+                              value: isSwitched,
+                              onChanged: (bool value) {
+                                setState(() {
+                                  isSwitched = value;
+                                });
+                              },
+                              activeTrackColor: Colors.lightGreen,
+                              activeColor: Colors.green,
                             ),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(
                       height: 5,
                     ),
@@ -233,8 +234,10 @@ class _EditPipelineState extends State<EditPipeline> {
                                   // Prevent Multiple Clicked
                                   setState(() {
                                     ignorePointer = true;
-                                    Timer(Duration(seconds: 3), () {
-                                      ignorePointer = false;
+                                    ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                      setState(() {
+                                        ignorePointer = false;
+                                      });
                                     });
                                   });
                                   EasyLoading.show(status: "Loading...");
@@ -250,14 +253,14 @@ class _EditPipelineState extends State<EditPipeline> {
                                         .then((value) {
                                       if (value.status == 200) {
                                         EasyLoading.showSuccess(value.message!,
-                                            duration: Duration(seconds: 3), dismissOnTap: true);
+                                            duration: const Duration(seconds: 3), dismissOnTap: true);
                                         Navigator.pop(context);
                                       } else {
                                         EasyLoading.showError(value.message!,
-                                            duration: Duration(seconds: 3), dismissOnTap: true);
+                                            duration: const Duration(seconds: 3), dismissOnTap: true);
                                       }
                                     }).whenComplete(() {
-                                      Timer(Duration(seconds: 5), () {
+                                      Timer(const Duration(seconds: 5), () {
                                         EasyLoading.dismiss();
                                       });
                                     });
@@ -270,14 +273,14 @@ class _EditPipelineState extends State<EditPipeline> {
                                         .then((value) {
                                       if (value.status == 200) {
                                         EasyLoading.showSuccess(value.message!,
-                                            duration: Duration(seconds: 3), dismissOnTap: true);
+                                            duration: const Duration(seconds: 3), dismissOnTap: true);
                                         Navigator.pop(context);
                                       } else {
                                         EasyLoading.showError(value.message!,
-                                            duration: Duration(seconds: 3), dismissOnTap: true);
+                                            duration: const Duration(seconds: 3), dismissOnTap: true);
                                       }
                                     }).whenComplete(() {
-                                      Timer(Duration(seconds: 5), () {
+                                      Timer(const Duration(seconds: 5), () {
                                         EasyLoading.dismiss();
                                       });
                                     });

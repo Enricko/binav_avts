@@ -63,6 +63,6 @@ class _ResetSuccessScreenState extends State<ResetSuccessScreen> {
           ),
         ),
       ],
-    );;
+    );
   }
 }

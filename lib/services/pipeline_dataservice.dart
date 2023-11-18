@@ -12,7 +12,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class PipelineDataService {
   // final dio = Dio(BaseOptions(baseUrl: "http://127.0.0.1:8000"));
-  final dio = Dio(BaseOptions(baseUrl: "https://api.binav-avts.id"));
+  final dio = Dio(BaseOptions(baseUrl: "https://api.binav-avts.id", headers: {
+    'Accept': "application/json",
+  }));
 
   Future<SendResponse> addPipeline(
       {required String id_client,
@@ -21,20 +23,15 @@ class PipelineDataService {
       required String fileName,
       required bool isSwitched}) async {
     try {
-      // dio.options.headers['Authorization'] = "Bearer $token";
-      // dio.options.headers['Content-Type'] = 'multipart/form-data';
-      // dio.options.contentType = 'multipart/form-data';
       var formData = FormData.fromMap({
         "id_client": id_client,
         "name": name,
         "file": MultipartFile.fromBytes(file, filename: fileName),
         "switch": isSwitched ? "1" : "0"
       });
-      final response = await dio.post("/api/insert_mapping", data: formData,
-          onSendProgress: (int sent, int total) {
+      final response = await dio.post("/api/insert_mapping", data: formData, onSendProgress: (int sent, int total) {
         EasyLoading.showProgress(sent / total,
-            status:
-                "${((sent / total) * 100).toStringAsFixed(2)}%\nSending data...");
+            status: "${((sent / total) * 100).toStringAsFixed(2)}%\nSending data...");
       });
       return SendResponse.fromJson(response.data);
     } catch (e) {
@@ -63,11 +60,9 @@ class PipelineDataService {
         "file": MultipartFile.fromBytes(file, filename: fileName),
         "switch": isSwitched ? "1" : "0"
       });
-      final response = await dio.post("/api/update_mapping", data: formData,
-          onSendProgress: (int sent, int total) {
+      final response = await dio.post("/api/update_mapping", data: formData, onSendProgress: (int sent, int total) {
         EasyLoading.showProgress(sent / total,
-            status:
-                "${((sent / total) * 100).toStringAsFixed(2)}%\nSending data...");
+            status: "${((sent / total) * 100).toStringAsFixed(2)}%\nSending data...");
       });
       return SendResponse.fromJson(response.data);
     } catch (e) {
@@ -83,20 +78,12 @@ class PipelineDataService {
   }
 
   Future<SendResponse> editPipelineNoFile(
-      {required String id_mapping,
-      required String name,
-      required bool isSwitched}) async {
+      {required String id_mapping, required String name, required bool isSwitched}) async {
     try {
-      var formData = FormData.fromMap({
-        "id_mapping": id_mapping,
-        "name": name,
-        "switch": isSwitched ? "1" : "0"
-      });
-      final response = await dio.post("/api/update_mapping", data: formData,
-          onSendProgress: (int sent, int total) {
+      var formData = FormData.fromMap({"id_mapping": id_mapping, "name": name, "switch": isSwitched ? "1" : "0"});
+      final response = await dio.post("/api/update_mapping", data: formData, onSendProgress: (int sent, int total) {
         EasyLoading.showProgress(sent / total,
-            status:
-                "${((sent / total) * 100).toStringAsFixed(2)}%\nSending data...");
+            status: "${((sent / total) * 100).toStringAsFixed(2)}%\nSending data...");
       });
       return SendResponse.fromJson(response.data);
     } catch (e) {
@@ -111,15 +98,12 @@ class PipelineDataService {
     }
   }
 
-  Future<SendResponse> deletePipeline(
-      {required String token, required String id_mapping}) async {
+  Future<SendResponse> deletePipeline({required String token, required String id_mapping}) async {
     try {
       dio.options.headers['Authorization'] = "Bearer $token";
-      final response = await dio.post("/api/delete_mapping/$id_mapping",
-          onSendProgress: (int sent, int total) {
+      final response = await dio.post("/api/delete_mapping/$id_mapping", onSendProgress: (int sent, int total) {
         EasyLoading.showProgress(sent / total,
-            status:
-                "${((sent / total) * 100).toStringAsFixed(2)}%\nSending data...");
+            status: "${((sent / total) * 100).toStringAsFixed(2)}%\nSending data...");
       });
       return SendResponse.fromJson(response.data);
     } catch (e) {

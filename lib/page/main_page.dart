@@ -116,6 +116,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    print("client : ${widget.idClient}");
     BlocProvider.of<SocketCubit>(context).getKapalCoorDataMarker(payload: {
       "id_client": widget.idClient,
       "page": 1,
@@ -138,7 +139,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _timer!.cancel();
-    
+    // mapController.dispose();
     BlocProvider.of<SocketCubit>(context).close();
     super.dispose();
   }
@@ -202,7 +203,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                             builder: (BuildContext context) {
                               return Dialog(
                                 shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                                child: ClientTablePage(idClient: widget.idClient),
+                                child: ClientTablePage(),
                               );
                             });
                     }
@@ -289,7 +290,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                             // Open Street Map
                             // 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
                             userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-                            tileProvider: CancellableNetworkTileProvider(),
+                            // tileProvider: CancellableNetworkTileProvider(),
                           ),
                           MarkerLayer(
                             markers: [

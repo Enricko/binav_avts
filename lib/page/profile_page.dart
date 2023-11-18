@@ -28,7 +28,15 @@ class _ProfilePageState extends State<ProfilePage> {
   bool invisibleConfirmPass = true;
   bool ignorePointer = false;
 
+  Timer? ignorePointerTimer;
+
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +251,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               // Prevent Multiple Clicked
                                               setState(() {
                                                 ignorePointer = true;
-                                                Timer(const Duration(seconds: 3), () {
+                                                ignorePointerTimer = Timer(const Duration(seconds: 3), () {
                                                   setState(() {
                                                     ignorePointer = false;
                                                   });

@@ -1,4 +1,5 @@
 import 'package:binav_avts/response/send_response.dart';
+import 'package:binav_avts/response/websocket/client_response.dart';
 import 'package:dio/dio.dart';
 
 enum TypeMessageAuth {
@@ -8,7 +9,9 @@ enum TypeMessageAuth {
 
 class ClientDataService {
   // final dio = Dio(BaseOptions(baseUrl: "http://127.0.0.1:8000"));
-  final dio = Dio(BaseOptions(baseUrl: "https://api.binav-avts.id"));
+  final dio = Dio(BaseOptions(baseUrl: "https://api.binav-avts.id", headers: {
+    'Accept': "application/json",
+  }));
 
   Future<SendResponse> addClient(
       {required String client_name,
@@ -22,7 +25,7 @@ class ClientDataService {
         'email': email,
         'password': password,
         'password_confirmation': password_confirmation,
-        'status': isSwitched == true ? '1': '0',
+        'status': isSwitched == true ? '1' : '0',
       });
       return SendResponse.fromJson(response.data);
     } catch (e) {
@@ -36,17 +39,15 @@ class ClientDataService {
       return throw Exception();
     }
   }
+
   Future<SendResponse> editClient(
-      {required String id_client,
-      required String client_name,
-      required String email,
-      required bool isSwitched}) async {
+      {required String id_client, required String client_name, required String email, required bool isSwitched}) async {
     try {
       final response = await dio.post("/api/update_client", data: {
         'id_client': id_client,
         'client_name': client_name,
         'email': email,
-        'status': isSwitched == true ? '1': '0',
+        'status': isSwitched == true ? '1' : '0',
       });
       print(response.data);
       return SendResponse.fromJson(response.data);
@@ -62,7 +63,7 @@ class ClientDataService {
     }
   }
 
-  Future<SendResponse> deleteClient({required String token,required String id_client}) async {
+  Future<SendResponse> deleteClient({required String token, required String id_client}) async {
     try {
       dio.options.headers['Authorization'] = "Bearer $token";
       final response = await dio.post("/api/delete_client/$id_client");
@@ -79,7 +80,23 @@ class ClientDataService {
     }
   }
 
-  Future<SendResponse> sendMailToClient({required String token,required String id_client}) async {
+  Future<ClientResponse> getClientById({required String token, required String id_client}) async {
+    try {
+      dio.options.headers['Authorization'] = "Bearer $token";
+      final response = await dio.get("/api/get_client?id_client=$id_client");
+      return ClientResponse.fromJson(response.data);
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response != null) {
+          return ClientResponse.fromJson(e.response!.data);
+        } else {
+          return throw ('Error message: ${e.message}');
+        }
+      }
+      return throw Exception();
+    }
+  }
+  Future<SendResponse> sendMailToClient({required String token, required String id_client}) async {
     try {
       dio.options.headers['Authorization'] = "Bearer $token";
       final response = await dio.post("/api/send_client_email/$id_client");
@@ -95,5 +112,4 @@ class ClientDataService {
       return throw Exception();
     }
   }
-
 }

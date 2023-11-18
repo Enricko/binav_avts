@@ -21,12 +21,14 @@ class SendEmailConfirm extends StatefulWidget {
 class _SendEmailConfirmState extends State<SendEmailConfirm> {
   TextEditingController emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  Timer? ignorePointerTimer;
   bool ignorePointer = false;
   
   @override
   void dispose() {
     super.dispose();
     emailController.dispose();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
   }
 
   @override
@@ -125,7 +127,7 @@ class _SendEmailConfirmState extends State<SendEmailConfirm> {
                       // Prevent Multiple Clicked
                       setState(() {
                         ignorePointer = true;
-                        Timer(const Duration(seconds: 3), () {
+                        ignorePointerTimer = Timer(const Duration(seconds: 3), () {
                           setState(() {
                             ignorePointer = false;
                           });

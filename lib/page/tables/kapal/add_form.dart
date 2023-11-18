@@ -35,6 +35,7 @@ class _AddKapalState extends State<AddKapal> {
   bool isSwitched = false;
   bool ignorePointer = false;
   Timer? _timer;
+  Timer? ignorePointerTimer;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -81,6 +82,7 @@ class _AddKapalState extends State<AddKapal> {
     yearbuiltController.dispose();
     FilePickerController.dispose();
     _timer!.cancel();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
     super.dispose();
   }
 
@@ -89,7 +91,7 @@ class _AddKapalState extends State<AddKapal> {
     var width = MediaQuery.of(context).size.width;
     return SingleChildScrollView(
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         width: width <= 540 ? width / 1.3 : width / 1.6,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -392,8 +394,10 @@ class _AddKapalState extends State<AddKapal> {
                                   // Prevent Multiple Clicked
                                   setState(() {
                                     ignorePointer = true;
-                                    Timer(Duration(seconds: 3), () {
-                                      ignorePointer = false;
+                                    ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                      setState(() {
+                                        ignorePointer = false;
+                                      });
                                     });
                                   });
                                   var data = {
@@ -414,14 +418,14 @@ class _AddKapalState extends State<AddKapal> {
                                       .then((value) {
                                     if (value.status == 200) {
                                       EasyLoading.showSuccess(value.message!,
-                                          duration: Duration(seconds: 3), dismissOnTap: true);
+                                          duration: const Duration(seconds: 3), dismissOnTap: true);
                                       Navigator.pop(context);
                                     } else {
                                       EasyLoading.showError(value.message!,
-                                          duration: Duration(seconds: 3), dismissOnTap: true);
+                                          duration: const Duration(seconds: 3), dismissOnTap: true);
                                     }
                                   }).whenComplete(() {
-                                    Timer(Duration(seconds: 5), () {
+                                    Timer(const Duration(seconds: 5), () {
                                       EasyLoading.dismiss();
                                     });
                                   });

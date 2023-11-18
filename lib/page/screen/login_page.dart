@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:binav_avts/bloc/auth_widget/auth_widget_bloc.dart';
 import 'package:binav_avts/page/screen/forgot_password/send_email_confirmation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
@@ -21,12 +22,21 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  Timer? ignorePointerTimer;
+  bool ignorePointer = false;
+
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool invisible = true;
   final bool _isVisible = true;
 
-  bool ignorePointer = false;
+  @override
+  void dispose() {
+    if (ignorePointerTimer != null) {
+      ignorePointerTimer!.cancel();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,82 +65,85 @@ class _LoginPageState extends State<LoginPage> {
               // widget.idClient != null ? Text("Email : ${emailController.text}") :
               Form(
                 key: _formKey,
-                child: Column(
-                  children: [
-                    Visibility(
-                      visible: _isVisible,
-                      child: TextFormField(
-                        autofillHints: [AutofillHints.email],
+                child: AutofillGroup(
+                  child: Column(
+                    children: [
+                      Visibility(
+                        visible: _isVisible,
+                        child: TextFormField(
+                          autofillHints: [AutofillHints.email],
+                          keyboardType: TextInputType.text,
+                          controller: emailController,
+                          textInputAction: TextInputAction.next,
+                          validator: (value) {
+                            if (value == null || value.isEmpty || value == "") {
+                              return "The Email field is required.";
+                            }
+                            if (!RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(value)) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.fromLTRB(20, 3, 1, 3),
+                            hintText: "Email",
+                            prefixIcon: Icon(Icons.email_outlined),
+                            // hintStyle: Constants.hintStyle,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(width: 1, color: Colors.blueAccent),
+                            ),
+                            enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.black38)),
+                            errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                            focusedErrorBorder:
+                                OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                            filled: true,
+                            fillColor: Color(0x0f2f2f2f),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        autofillHints: [AutofillHints.password],
                         keyboardType: TextInputType.text,
-                        controller: emailController,
+                        controller: passwordController,
                         textInputAction: TextInputAction.next,
+                        obscureText: invisible,
                         validator: (value) {
                           if (value == null || value.isEmpty || value == "") {
-                            return "The Email field is required.";
-                          }
-                          if (!RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(value)) {
-                            return 'Please enter a valid email';
+                            return "The Password field is required.";
                           }
                           return null;
                         },
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.fromLTRB(20, 3, 1, 3),
-                          hintText: "Email",
-                          prefixIcon: Icon(Icons.email_outlined),
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(5),
+                          hintText: "Password",
+                          prefixIcon: const Icon(Icons.key),
+                          suffixIcon: IconButton(
+                            icon: Icon((invisible == true) ? Icons.visibility_outlined : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                invisible = !invisible;
+                              });
+                            },
+                          ),
                           // hintStyle: Constants.hintStyle,
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(width: 1, color: Colors.blueAccent),
                           ),
-                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.black38)),
-                          errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                          enabledBorder:
+                              const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.black38)),
+                          errorBorder:
+                              const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
                           focusedErrorBorder:
-                              OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                              const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
                           filled: true,
-                          fillColor: Color(0x0f2f2f2f),
+                          fillColor: const Color(0x0f2f2f2f),
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      keyboardType: TextInputType.text,
-                      controller: passwordController,
-                      textInputAction: TextInputAction.next,
-                      obscureText: invisible,
-                      validator: (value) {
-                        if (value == null || value.isEmpty || value == "") {
-                          return "The Password field is required.";
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(5),
-                        hintText: "Password",
-                        prefixIcon: const Icon(Icons.key),
-                        suffixIcon: IconButton(
-                          icon: Icon((invisible == true) ? Icons.visibility_outlined : Icons.visibility_off),
-                          onPressed: () {
-                            setState(() {
-                              invisible = !invisible;
-                            });
-                          },
-                        ),
-                        // hintStyle: Constants.hintStyle,
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: Colors.blueAccent),
-                        ),
-                        enabledBorder:
-                            const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.black38)),
-                        errorBorder:
-                            const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
-                        focusedErrorBorder:
-                            const OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.redAccent)),
-                        filled: true,
-                        fillColor: const Color(0x0f2f2f2f),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(
@@ -145,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                   Expanded(child: Text("Remember me")),
                   TextButton(
                     onPressed: () {
-                        context.read<AuthWidgetBloc>().add(EmailConfirm());
+                      context.read<AuthWidgetBloc>().add(EmailConfirm());
                     },
                     child: Text(
                       "Forgot Password",
@@ -181,13 +194,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     onPressed: () async {
                       // _isVisible == true ? loginAdmin() : loginClient();
+
+                      TextInput.finishAutofillContext();
                       if (_formKey.currentState!.validate()) {
                         setState(() {
                           ignorePointer = true;
-                          Timer(const Duration(seconds: 3), () {
+                          ignorePointerTimer = Timer(const Duration(seconds: 10), () {
                             setState(() {
                               ignorePointer = false;
-                              print(ignorePointer);
                             });
                           });
                         });

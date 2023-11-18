@@ -29,6 +29,7 @@ class _KapalTablePageState extends State<KapalTablePage> {
   int? totalPage;
 
   Timer? _timer;
+  Timer? ignorePointerTimer;
   bool isSwitched = false;
   bool ignorePointer = false;
   bool load = false;
@@ -55,6 +56,7 @@ class _KapalTablePageState extends State<KapalTablePage> {
   @override
   void dispose() {
     _timer!.cancel();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
     super.dispose();
   }
 
@@ -254,8 +256,10 @@ class _KapalTablePageState extends State<KapalTablePage> {
                                                   if (!ignorePointer) {
                                                     setState(() {
                                                       ignorePointer = true;
-                                                      Timer(const Duration(seconds: 3), () {
-                                                        ignorePointer = false;
+                                                      ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                                        setState(() {
+                                                          ignorePointer = false;
+                                                        });
                                                       });
                                                     });
                                                     EasyLoading.show(status: "Loading...");

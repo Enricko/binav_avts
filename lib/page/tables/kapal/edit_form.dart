@@ -32,7 +32,7 @@ class _EditKapalState extends State<EditKapal> {
   String? vesselSize;
   bool isSwitched = false;
   bool ignorePointer = false;
-  // Timer? _timer;
+  Timer? ignorePointerTimer;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -73,7 +73,7 @@ class _EditKapalState extends State<EditKapal> {
     builderController.dispose();
     yearbuiltController.dispose();
     FilePickerController.dispose();
-    // _timer!.cancel();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
     super.dispose();
   }
 
@@ -306,8 +306,10 @@ class _EditKapalState extends State<EditKapal> {
                                     // Prevent Multiple Clicked
                                     setState(() {
                                       ignorePointer = true;
-                                      Timer(Duration(seconds: 3), () {
-                                        ignorePointer = false;
+                                      ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                        setState(() {
+                                          ignorePointer = false;
+                                        });
                                       });
                                     });
                                     EasyLoading.show(status: "Loading...");
@@ -332,14 +334,14 @@ class _EditKapalState extends State<EditKapal> {
                                           .then((value) {
                                         if (value.status == 200) {
                                           EasyLoading.showSuccess(value.message!,
-                                              duration: Duration(seconds: 3), dismissOnTap: true);
+                                              duration: const Duration(seconds: 3), dismissOnTap: true);
                                           Navigator.pop(context);
                                         } else {
                                           EasyLoading.showError(value.message!,
-                                              duration: Duration(seconds: 3), dismissOnTap: true);
+                                              duration: const Duration(seconds: 3), dismissOnTap: true);
                                         }
                                       }).whenComplete(() {
-                                        Timer(Duration(seconds: 5), () {
+                                        Timer(const Duration(seconds: 5), () {
                                           EasyLoading.dismiss();
                                         });
                                       });
@@ -349,14 +351,14 @@ class _EditKapalState extends State<EditKapal> {
                                           .then((value) {
                                         if (value.status == 200) {
                                           EasyLoading.showSuccess(value.message!,
-                                              duration: Duration(seconds: 3), dismissOnTap: true);
+                                              duration: const Duration(seconds: 3), dismissOnTap: true);
                                           Navigator.pop(context);
                                         } else {
                                           EasyLoading.showError(value.message!,
-                                              duration: Duration(seconds: 3), dismissOnTap: true);
+                                              duration: const Duration(seconds: 3), dismissOnTap: true);
                                         }
                                       }).whenComplete(() {
-                                        Timer(Duration(seconds: 5), () {
+                                        Timer(const Duration(seconds: 5), () {
                                           EasyLoading.dismiss();
                                         });
                                       });

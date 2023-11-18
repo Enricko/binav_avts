@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:binav_avts/response/websocket/client_response.dart'
-    as ClientResponse;
+import 'package:binav_avts/response/websocket/client_response.dart' as ClientResponse;
 import 'package:binav_avts/services/client_dataservice.dart';
 import 'package:binav_avts/utils/text_field.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +21,7 @@ class _EditClientState extends State<EditClient> {
 
   bool isSwitched = false;
   bool ignorePointer = false;
+  Timer? ignorePointerTimer;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -36,6 +36,7 @@ class _EditClientState extends State<EditClient> {
   void dispose() {
     nameController.dispose();
     emailController.dispose();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
     super.dispose();
   }
 
@@ -57,8 +58,7 @@ class _EditClientState extends State<EditClient> {
                 children: [
                   Text(
                     " Edit Client",
-                    style: GoogleFonts.openSans(
-                        fontSize: 15, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.openSans(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
                     onPressed: () {
@@ -74,13 +74,13 @@ class _EditClientState extends State<EditClient> {
             ),
             SizedBox(
               height: 485,
-              child: Padding( 
+              child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
                       Form(
@@ -92,9 +92,7 @@ class _EditClientState extends State<EditClient> {
                               hint: 'Name',
                               type: TextInputType.text,
                               validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty ||
-                                    value == "") {
+                                if (value == null || value.isEmpty || value == "") {
                                   return "The Name field is required.";
                                 }
                                 return null;
@@ -105,14 +103,10 @@ class _EditClientState extends State<EditClient> {
                               hint: 'Email',
                               type: TextInputType.text,
                               validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty ||
-                                    value == "") {
+                                if (value == null || value.isEmpty || value == "") {
                                   return "The Email field is required.";
                                 }
-                                if (!RegExp(
-                                        r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                                    .hasMatch(value)) {
+                                if (!RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(value)) {
                                   return 'Please enter a valid email';
                                 }
                                 return null;
@@ -150,8 +144,7 @@ class _EditClientState extends State<EditClient> {
                             ignoring: ignorePointer,
                             child: ElevatedButton(
                               style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all(Colors.blueAccent),
+                                backgroundColor: MaterialStateProperty.all(Colors.blueAccent),
                                 shape: MaterialStateProperty.all(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(5),
@@ -167,13 +160,15 @@ class _EditClientState extends State<EditClient> {
                                   //       content: Text('Processing Data')),
                                   // );
                                   setState(() {
-                                      ignorePointer = true;
-                                      Timer(Duration(seconds: 3), () {
+                                    ignorePointer = true;
+                                    ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                      setState(() {
                                         ignorePointer = false;
                                       });
                                     });
-                                EasyLoading.show(status: "Loading...");
-                          
+                                  });
+                                  EasyLoading.show(status: "Loading...");
+
                                   ClientDataService()
                                       .editClient(
                                           id_client: widget.data.idClient!,
@@ -186,18 +181,16 @@ class _EditClientState extends State<EditClient> {
                                         isSwitched = false;
                                       });
                                       EasyLoading.showSuccess(value.message!,
-                                          duration: Duration(seconds: 3),
-                                          dismissOnTap: true);
+                                          duration: const Duration(seconds: 3), dismissOnTap: true);
                                       Navigator.pop(context);
                                     } else {
                                       EasyLoading.showError(value.message!,
-                                          duration: Duration(seconds: 3),
-                                          dismissOnTap: true);
+                                          duration: const Duration(seconds: 3), dismissOnTap: true);
                                     }
                                   });
                                 }
                               },
-                              child: Text(
+                              child: const Text(
                                 "Submit",
                                 style: TextStyle(
                                   color: Colors.white,
@@ -210,18 +203,16 @@ class _EditClientState extends State<EditClient> {
                           ),
                           TextButton(
                             style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
-                                    RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
-                                        side: BorderSide(
-                                            color: Colors.blueAccent)))),
+                                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                    side: const BorderSide(color: Colors.blueAccent)))),
                             onPressed: () {
                               setState(() {
                                 isSwitched = false;
                               });
                               Navigator.pop(context);
                             },
-                            child: Text(
+                            child: const Text(
                               "Cancel",
                               style: TextStyle(
                                 color: Colors.blueAccent,

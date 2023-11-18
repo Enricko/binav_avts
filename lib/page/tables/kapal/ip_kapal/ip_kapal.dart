@@ -29,6 +29,7 @@ class _IpKapalPageState extends State<IpKapalPage> {
   bool load = false;
   bool ignorePointer = false;
   Timer? _timer;
+  Timer? ignorePointerTimer;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -49,6 +50,7 @@ class _IpKapalPageState extends State<IpKapalPage> {
     ipController.dispose();
     portController.dispose();
     _timer!.cancel();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
     super.dispose();
   }
 
@@ -232,8 +234,10 @@ class _IpKapalPageState extends State<IpKapalPage> {
                                         // Prevent Multiple Clicked
                                         setState(() {
                                           ignorePointer = true;
-                                          Timer(Duration(seconds: 3), () {
-                                            ignorePointer = false;
+                                          ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                            setState(() {
+                                              ignorePointer = false;
+                                            });
                                           });
                                         });
                                         EasyLoading.show(status: "Loading...");
@@ -320,42 +324,44 @@ class _IpKapalPageState extends State<IpKapalPage> {
                                                 title: "Are you sure you want to delete this data?",
                                                 onPressYes: () async {
                                                   if (!ignorePointer) {
-                                                      setState(() {
-                                                        ignorePointer = true;
-                                                        Timer(const Duration(seconds: 3), () {
+                                                    setState(() {
+                                                      ignorePointer = true;
+                                                      ignorePointerTimer = Timer(const Duration(seconds: 3), () {
+                                                        setState(() {
                                                           ignorePointer = false;
                                                         });
                                                       });
-                                                      EasyLoading.show(status: "Loading...");
-                                                      try {
-                                                        SharedPreferences pref = await SharedPreferences.getInstance();
-                                                        IpKapalDataService()
-                                                            .deleteIpKapal(
-                                                                token: pref.getString("token")!,
-                                                                idIpKapal: value.idIpKapal.toString())
-                                                            .then((val) {
-                                                          if (val.status == 200) {
-                                                            EasyLoading.showSuccess(val.message!,
-                                                                duration: const Duration(seconds: 3), dismissOnTap: true);
-                                                            Navigator.pop(context);
-                                                          } else {
-                                                            EasyLoading.showError(val.message!,
-                                                                duration: const Duration(seconds: 3), dismissOnTap: true);
-                                                            Navigator.pop(context);
-                                                          }
-                                                        });
-                                                      } catch (e) {
-                                                        print(e);
-                                                        EasyLoading.showError(e.toString());
-                                                      }
+                                                    });
+                                                    EasyLoading.show(status: "Loading...");
+                                                    try {
+                                                      SharedPreferences pref = await SharedPreferences.getInstance();
+                                                      IpKapalDataService()
+                                                          .deleteIpKapal(
+                                                              token: pref.getString("token")!,
+                                                              idIpKapal: value.idIpKapal.toString())
+                                                          .then((val) {
+                                                        if (val.status == 200) {
+                                                          EasyLoading.showSuccess(val.message!,
+                                                              duration: const Duration(seconds: 3), dismissOnTap: true);
+                                                          Navigator.pop(context);
+                                                        } else {
+                                                          EasyLoading.showError(val.message!,
+                                                              duration: const Duration(seconds: 3), dismissOnTap: true);
+                                                          Navigator.pop(context);
+                                                        }
+                                                      });
+                                                    } catch (e) {
+                                                      print(e);
+                                                      EasyLoading.showError(e.toString());
                                                     }
+                                                  }
                                                 },
                                                 onPressNo: () {
                                                   Navigator.pop(context);
                                                 },
                                                 context: context);
                                           },
-                                          icon: Icon(Icons.delete,color:Colors.redAccent),
+                                          icon: Icon(Icons.delete, color: Colors.redAccent),
                                         ),
                                       )),
                                     ]);

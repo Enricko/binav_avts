@@ -27,7 +27,9 @@ class KmlPolygon {
 }
 
 class _PipelineLayerState extends State<PipelineLayer> {
+  String currentClient = '';
   Map<String, List<KmlPolygon>> kmlOverlayPolygons = {};
+  final overlayStream = StreamController<Map<String, List<KmlPolygon>>>.broadcast();
   Timer? _timer;
 
   Future<void> loadKMZData(BuildContext context, List<MappingResponse.Data> files) async {
@@ -119,11 +121,15 @@ class _PipelineLayerState extends State<PipelineLayer> {
   void fetchData() {
     BlocProvider.of<SocketCubit>(context)
         .getMappingLayer(payload: {"id_client": widget.idClient, "page": 1, "perpage": 100});
-    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 10), (timer) {
       BlocProvider.of<SocketCubit>(context)
           .getMappingLayer(payload: {"id_client": widget.idClient, "page": 1, "perpage": 100});
-      // load = false;
     });
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      checkClient();
+      overlayStream.sink.add(kmlOverlayPolygons);
+    });
+
   }
 
   void stopFetchingData() {
@@ -132,14 +138,21 @@ class _PipelineLayerState extends State<PipelineLayer> {
     }
   }
 
+  void checkClient() {
+    if (!currentClient.contains(widget.idClient)) {
+      currentClient = widget.idClient;
+      print(currentClient);
+      print(kmlOverlayPolygons);
+      kmlOverlayPolygons.clear();
+    }
+  }
+
   @override
   void initState() {
     fetchData();
-    BlocProvider.of<SocketCubit>(context).MappingLayerStreamController.listen((event) {
-      // MappingResponse.Data val = event.data;
-      // final data = MappingResponse.MappingResponse.fromJson(val);
+    BlocProvider.of<SocketCubit>(context).MappingLayerStreamController.listen((event) async {
       List<MappingResponse.Data> pipeData = event.data!;
-      loadKMZData(context, pipeData);
+      await loadKMZData(context, pipeData);
     });
     super.initState();
   }
@@ -152,25 +165,33 @@ class _PipelineLayerState extends State<PipelineLayer> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: kmlOverlayPolygons.entries
-          .map((x) => PolylineLayer(
-                polylines: x.value
-                    .map(
-                      (y) => Polyline(
-                        strokeWidth: 3,
-                        points: y.points,
-                        color: Color(
-                          int.parse(
-                            y.color,
-                            radix: 16,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ))
-          .toList(),
+    return StreamBuilder<Map<String, List<KmlPolygon>>>(
+      stream: overlayStream.stream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Stack(
+            children: snapshot.data!.entries
+                .map((x) => PolylineLayer(
+                      polylines: x.value
+                          .map(
+                            (y) => Polyline(
+                              strokeWidth: 3,
+                              points: y.points,
+                              color: Color(
+                                int.parse(
+                                  y.color,
+                                  radix: 16,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ))
+                .toList(),
+          );
+        }
+        return Container();
+      },
     );
   }
 }

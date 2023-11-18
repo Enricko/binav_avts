@@ -5,6 +5,7 @@ import 'package:binav_avts/page/screen/forgot_password/create_new_password.dart'
 import 'package:binav_avts/page/screen/forgot_password/send_email_confirmation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,10 +25,11 @@ class _SendOtpState extends State<SendOtp> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController otpController = TextEditingController();
   bool ignorePointer = false;
+  Timer? ignorePointerTimer;
 
   ///
   late Timer countdownTimer;
-  int resendTime = 10;
+  int resendTime = 60;
 
   @override
   void initState() {
@@ -37,8 +39,9 @@ class _SendOtpState extends State<SendOtp> {
 
   @override
   void dispose() {
-    countdownTimer.cancel();
     super.dispose();
+    countdownTimer.cancel();
+    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
   }
 
   startTimer() {
@@ -111,6 +114,10 @@ class _SendOtpState extends State<SendOtp> {
                       }
                       return null;
                     },
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(6),
+                    ],
                     autoDisposeControllers: false,
                     appContext: context,
                     autoFocus: true,
@@ -193,7 +200,7 @@ class _SendOtpState extends State<SendOtp> {
                         if (_formKey.currentState!.validate()) {
                           setState(() {
                             ignorePointer = true;
-                            Timer(const Duration(seconds: 3), () {
+                            ignorePointerTimer = Timer(const Duration(seconds: 3), () {
                               setState(() {
                                 ignorePointer = false;
                               });
