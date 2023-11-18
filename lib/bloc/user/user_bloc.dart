@@ -1,3 +1,4 @@
+import 'package:binav_avts/bloc/utils/utils_bloc.dart';
 import 'dart:async';
 
 import 'package:binav_avts/services/user_dataservice.dart';
@@ -16,7 +17,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<SignIn>((event, emit) async {
       if (state is UserSignedOut) {
         final getUser = await userDataSource.login(email: event.email, password: event.password);
-
+        if (state == CheckboxState.checked) {
+          SharedPreferences pref = await SharedPreferences.getInstance();
+          pref.setString('rememberMe', getUser.user!.email!);
+        }
         if (getUser.message!.contains("Login Success")) {
           SharedPreferences pref = await SharedPreferences.getInstance();
           if (getUser.client!.idClient != null) {

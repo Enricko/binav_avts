@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'package:binav_avts/bloc/general/general_cubit.dart';
 import 'package:binav_avts/bloc/user/user_bloc.dart';
 import 'package:binav_avts/bloc/websocket/socket_cubit.dart';
-import 'package:binav_avts/page/profile_page.dart';
+import 'package:binav_avts/page/first_profile.dart';
 import 'package:binav_avts/page/tables/clients/client.dart';
 import 'package:binav_avts/page/tables/kapal/kapal.dart';
 import 'package:binav_avts/page/tables/pipeline/pipeline.dart';
@@ -218,7 +218,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                             return Dialog(
                               alignment: Alignment.centerRight,
                                 shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                                child:ProfilePage());
+                                child:FirstProfile());
                           });
                     },
                     child: CircleAvatar(

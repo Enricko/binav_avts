@@ -33,4 +33,11 @@ class GeneralCubit extends Cubit<GeneralState> {
     _forgotPasswordContent = content;
   }
 
+  bool _isChecked = false;
+  bool get isChecked =>  _isChecked;
+
+  set checkedRemember (bool value){
+    _isChecked = !_isChecked;
+  }
+
 }
