@@ -22,15 +22,11 @@ class FirstProfile extends StatefulWidget {
 }
 
 class _FirstProfileState extends State<FirstProfile> {
-
-
   bool isChangePassword = false;
   bool invisibleOldPass = true;
   bool invisibleNewPass = true;
   bool invisibleConfirmPass = true;
   bool ignorePointer = false;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +51,7 @@ class _FirstProfileState extends State<FirstProfile> {
                   ),
                   IconButton(
                     onPressed: () {
+                      context.read<ProfileWidgetBloc>().add(Profile());
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.close),
@@ -67,7 +64,7 @@ class _FirstProfileState extends State<FirstProfile> {
               builder: (context, state) {
                 if (state is AuthChangePassword) {
                   return SendChangePassword();
-                }else if (state is AuthLogOut){
+                } else if (state is AuthLogOut) {
                   return LogOutPage();
                 }
                 return ProfilePage();

@@ -40,6 +40,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     });
     on<SignOut>((event, emit) async {
+      EasyLoading.show(status: "Loading...");
       SharedPreferences pref = await SharedPreferences.getInstance();
       final getUser = await userDataSource.logout(token: pref.getString("token").toString());
       pref.remove('idClient');
@@ -53,6 +54,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         emit(UserSignedOut(message: getUser.message!, type: TypeMessageAuth.Logout));
       } else {
         emit(UserSignedOut());
+          await EasyLoading.dismiss();
       }
     });
     on<CheckSignInStatus>((event, emit) async {

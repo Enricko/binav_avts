@@ -38,7 +38,6 @@ class UserDataService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          print(token);
           return UserResponse.fromJson(e.response!.data);
         } else {
           return throw ('Error message: ${e.message}');
@@ -62,7 +61,6 @@ class UserDataService {
     } catch (e) {
       if (e is DioError) {
         if (e.response != null) {
-          print(token);
           return UserResponse.fromJson(e.response!.data);
         } else {
           return throw ('Error message: ${e.message}');

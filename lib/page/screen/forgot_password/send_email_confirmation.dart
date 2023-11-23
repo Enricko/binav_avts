@@ -81,7 +81,7 @@ class _SendEmailConfirmState extends State<SendEmailConfirm> {
                       if (value == null || value.isEmpty || value == "") {
                         return "The Email field is required.";
                       }
-                      if (!RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(value)) {
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                         return 'Please enter a valid email';
                       }
                       return null;

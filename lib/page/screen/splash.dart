@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:binav_avts/bloc/user/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +29,7 @@ class _SplashState extends State<Splash> {
     } else if (userBloc.state is UserSignedIn && pref.getString('token') != null) {
       if (pref.getString("level") == "client") {
         context.goNamed("main_page_client", pathParameters: {'id_client': pref.getString("idClient")!});
-      }else{
+      } else {
         context.goNamed("main_page");
       }
     }
@@ -35,9 +37,12 @@ class _SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Text("Splash Screen"),
+        child: Image.asset(
+          "assets/logo.png",
+          height: 40,
+        ),
       ),
     );
   }

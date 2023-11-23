@@ -60,7 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 context.read<ProfileWidgetBloc>().add(LogOut());
               },
               title: Text("Log Out"),
-              trailing: Icon(Icons.key),
+              trailing: Icon(Icons.exit_to_app),
             ),
           ],
         ),

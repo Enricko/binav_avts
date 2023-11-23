@@ -297,7 +297,7 @@ class _FirstScreenState extends State<FirstScreen> {
   //                         return "The Email field is required.";
   //                       }
   //                       if (!RegExp(
-  //                               r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+  //                               r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
   //                           .hasMatch(value)) {
   //                         return 'Please enter a valid email';
   //                       }
