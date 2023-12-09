@@ -13,7 +13,7 @@ class IntroScreen extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage(assets),
-          fit: BoxFit.fill,
+          fit: BoxFit.cover,
         ),
         color: const Color.fromARGB(199, 0, 0, 0)
       ),
