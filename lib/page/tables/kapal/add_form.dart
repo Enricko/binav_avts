@@ -42,8 +42,8 @@ class _AddKapalState extends State<AddKapal> {
   Uint8List? filePickerVal;
 
   selectFile() async {
-    FilePickerResult? result =
-        await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['kml', 'kmz']);
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['kml', 'kmz']);
     if (result != null) {
       setState(() {
         FilePickerController.text = result.files.single.name;
@@ -82,7 +82,9 @@ class _AddKapalState extends State<AddKapal> {
     yearbuiltController.dispose();
     FilePickerController.dispose();
     _timer!.cancel();
-    if(ignorePointerTimer != null){ignorePointerTimer!.cancel();}
+    if (ignorePointerTimer != null) {
+      ignorePointerTimer!.cancel();
+    }
     super.dispose();
   }
 
@@ -298,8 +300,9 @@ class _AddKapalState extends State<AddKapal> {
                               children: [
                                 Div(
                                   divison: const Division(
-                                    colS: 9,
-                                    colM: 9,
+                                    colXS: 12,
+                                    colS: 6,
+                                    colM: 8,
                                     colL: 9,
                                     colXL: 9,
                                   ),
@@ -318,8 +321,9 @@ class _AddKapalState extends State<AddKapal> {
                                 ),
                                 Div(
                                   divison: const Division(
-                                    colS: 3,
-                                    colM: 3,
+                                    colXS:12,
+                                    colS: 6,
+                                    colM: 4,
                                     colL: 3,
                                     colXL: 3,
                                   ),
@@ -329,7 +333,7 @@ class _AddKapalState extends State<AddKapal> {
                                       color: Colors.white,
                                       size: 24.0,
                                     ),
-                                    label: const Text('Pilih File', style: TextStyle(fontSize: 16.0)),
+                                    label: const Text('Pilih File KML / KMZ File Only', style: TextStyle(fontSize: 14.0)),
                                     onPressed: () {
                                       selectFile();
                                     },

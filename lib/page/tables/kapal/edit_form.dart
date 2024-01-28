@@ -240,7 +240,7 @@ class _EditKapalState extends State<EditKapal> {
                                       color: Colors.white,
                                       size: 24.0,
                                     ),
-                                    label: const Text('Pilih File', style: TextStyle(fontSize: 16.0)),
+                                    label: const Text('Pilih File KML / KMZ File Only', style: TextStyle(fontSize: 16.0)),
                                     onPressed: () {
                                       selectFile();
                                     },

@@ -67,7 +67,6 @@ class _LoginPageState extends State<LoginPage> {
             height: 10,
           ),
           Text(
-            "${widget.idClient}"
                 "Hai Welcome to Binav AVTS\n"
                 "Log in to your Account",
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
